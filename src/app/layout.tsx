@@ -56,8 +56,7 @@ export const viewport = {
 };
 
 import { Providers } from '@/components/Providers';
-
-// ... imports
+import DeepLinkHandler from '@/components/DeepLinkHandler';
 
 export default function RootLayout({
   children,
@@ -68,6 +67,7 @@ export default function RootLayout({
     <html lang="tr" className="smooth-scroll">
       <body className={`${inter.variable} ${playfairDisplay.variable} font-body bg-neutral-light`}>
         <Providers>
+          <DeepLinkHandler />
           <a href="#main-content" className="skip-link">
             Ana içeriğe geç
           </a>

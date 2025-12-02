@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [error, setError] = useState<string | null>(null);
@@ -28,10 +28,6 @@ export default function AuthCallback() {
             // Redirect to dashboard or home
             router.push('/dashboard');
         } else {
-            // No JWT, maybe redirecting from Strapi without params?
-            // Or maybe we need to fetch it?
-            // Strapi usually sends ?jwt=...&user=...
-            // If not, we might need to check how Strapi is configured.
             console.log("No JWT found in URL");
         }
     }, [searchParams, router]);
@@ -55,5 +51,13 @@ export default function AuthCallback() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
             </div>
         </div>
+    );
+}
+
+export default function AuthCallback() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <AuthCallbackContent />
+        </Suspense>
     );
 }

@@ -99,5 +99,9 @@ export const authService = {
     }
 
     return response.json();
+  },
+
+  getProviderAuthUrl(provider: string) {
+    return `${STRAPI_URL}/api/connect/${provider}`;
   }
 };
