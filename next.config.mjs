@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   images: {
+    unoptimized: true,
     // domains: ["localhost", "127.0.0.1"], // Deprecated
     remotePatterns: [
       {
@@ -30,6 +32,31 @@ const withPWA = withPWAInit({
   disable: false,
   workboxOptions: {
     disableDevLogs: true,
+    runtimeCaching: [
+      {
+        urlPattern: /^http:\/\/127\.0\.0\.1:1337\/api\/.*$/,
+        handler: 'NetworkOnly',
+        options: {
+          backgroundSync: {
+            name: 'api-queue',
+            options: {
+              maxRetentionTime: 24 * 60,
+            },
+          },
+        },
+      },
+      {
+        urlPattern: /^http:\/\/127\.0\.0\.1:1337\/uploads\/.*$/,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'strapi-images',
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+          },
+        },
+      },
+    ],
   },
 });
 

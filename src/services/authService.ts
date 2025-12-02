@@ -52,7 +52,7 @@ export const authService = {
   },
 
   async register(data: RegisterData): Promise<LoginResponse> {
-    const response = await fetch(`/api/auth/register`, {
+    const response = await fetch(`${STRAPI_URL}/api/auth/local/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

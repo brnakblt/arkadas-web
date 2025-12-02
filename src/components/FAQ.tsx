@@ -1,42 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { FAQData } from "@/services/contentService";
 
-const FAQ: React.FC = () => {
+interface FAQProps {
+  data: FAQData[];
+}
+
+const FAQ: React.FC<FAQProps> = ({ data }) => {
   const [openIndexes, setOpenIndexes] = useState<number[]>([0]);
-
-  const faqs = [
-    {
-      question: "Hangi yaş gruplarına hizmet veriyorsunuz?",
-      answer:
-        "0-18 yaş arası tüm çocuklara hizmet veriyoruz. Erken müdahale programlarından okul çağı destek eğitimlerine kadar geniş bir yaş yelpazesinde uzmanlaşmış hizmetler sunuyoruz.",
-    },
-    {
-      question: "Özel eğitim süreci nasıl başlıyor?",
-      answer:
-        "İlk olarak ailemizle görüşme yapıyor, çocuğunuzun ihtiyaçlarını değerlendiriyoruz. Ardından kapsamlı bir değerlendirme süreci başlatıyor ve bireysel eğitim planı hazırlıyoruz. Tüm süreç ailenin aktif katılımıyla gerçekleşir.",
-    },
-    {
-      question: "Hangi alanlarda uzmanlaşmış hizmet veriyorsunuz?",
-      answer:
-        "Dil ve konuşma terapisi, özel eğitim, fizyoterapi, ergoterapisi, oyun terapisi ve aile danışmanlığı alanlarında uzman kadromuzla hizmet veriyoruz. Her çocuğun bireysel ihtiyaçlarına uygun programlar hazırlıyoruz.",
-    },
-    {
-      question: "Eğitim seansları ne kadar sürer?",
-      answer:
-        "Seansların süresi çocuğun yaşına, dikkat süresine ve ihtiyaçlarına göre belirlenir. Genellikle 30-45 dakika arasında değişir. Bireysel eğitim planında seansların sıklığı ve süresi detaylandırılır.",
-    },
-    {
-      question: "Ailelere nasıl destek sağlıyorsunuz?",
-      answer:
-        "Aile eğitimi ve danışmanlık hizmetleri sunuyoruz. Evde uygulayabilecekleri stratejiler öğretiyoruz ve düzenli aile görüşmeleri yapıyoruz. Ailenin sürece aktif katılımını destekliyoruz.",
-    },
-    {
-      question: "Randevu nasıl alabilirim?",
-      answer:
-        "Telefon, WhatsApp veya web sitemizden randevu alabilirsiniz. İlk görüşme ücretsizdir ve çocuğunuzun ihtiyaçlarını değerlendirmek için detaylı bir görüşme gerçekleştiririz.",
-    },
-  ];
 
   const toggleFAQ = (index: number) => {
     setOpenIndexes((prevIndexes) => {
@@ -49,6 +21,8 @@ const FAQ: React.FC = () => {
       }
     });
   };
+
+  if (!data) return null;
 
   return (
     <section
@@ -99,7 +73,7 @@ const FAQ: React.FC = () => {
 
         {/* FAQ Accordion */}
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {data.map((faq, index) => (
             <div
               key={index}
               className="bg-white rounded-2xl card-shadow overflow-hidden transition-all duration-300 hover:shadow-xl"

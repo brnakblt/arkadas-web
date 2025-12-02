@@ -2,56 +2,25 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { GalleryData, contentService } from "@/services/contentService";
 
-const Gallery: React.FC = () => {
+interface GalleryProps {
+  data: GalleryData[];
+}
+
+const Gallery: React.FC<GalleryProps> = ({ data }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const images = [
-    {
-      src: "/images/1.webp",
-      alt: "Arkadaş Özel Eğitim ve Rehabilitasyon Merkezi - Uzman eğitmenler ile bireysel çalışmalar",
-      title: "Bireysel Çalışmalar",
-      category: "Eğitim",
-    },
-    {
-      src: "/images/2.webp",
-      alt: "Arkadaş Özel Eğitim Merkezi - Modern özel eğitim sınıfları, çocuklar öğreniyor, destekleyici eğitim ortamı",
-      title: "Özel Eğitim Sınıfları",
-      category: "Eğitim",
-    },
-    {
-      src: "/images/3.webp",
-      alt: "Arkadaş Özel Eğitim Merkezi - Eğitici aktiviteler, renkli öğrenme materyalleri, interaktif öğrenme",
-      title: "Eğitici Aktiviteler",
-      category: "Sosyal Aktivite",
-    },
-    {
-      src: "/images/4.webp",
-      alt: "Arkadaş Özel Eğitim Merkezi - Bireyselleştirilmiş eğitim çalışmaları",
-      title: "Bireysel Eğitim",
-      category: "Eğitim",
-    },
-    {
-      src: "/images/5.webp",
-      alt: "Arkadaş Özel Eğitim Merkezi - Grup çalışmaları, sosyal beceri geliştirme, çocuklar birlikte öğreniyor",
-      title: "Grup Çalışmaları",
-      category: "Sosyal Aktivite",
-    },
-    {
-      src: "/images/6.webp",
-      alt: "Arkadaş Özel Eğitim Merkezi - Aile danışmanlığı ve rehberlik hizmetleri",
-      title: "Aile Danışmanlığı",
-      category: "Danışmanlık",
-    },
-  ];
-
-  const categories = ["Hepsi", "Eğitim", "Sosyal Aktivite", "Danışmanlık"];
+  // Extract unique categories from data
+  const categories = ["Hepsi", ...Array.from(new Set(data.map(item => item.category)))];
   const [activeCategory, setActiveCategory] = useState("Hepsi");
 
   const filteredImages =
     activeCategory === "Hepsi"
-      ? images
-      : images.filter((img) => img.category === activeCategory);
+      ? data
+      : data.filter((img) => img.category === activeCategory);
+
+  if (!data) return null;
 
   return (
     <section id="gallery" className="py-20 bg-white relative overflow-hidden">
@@ -75,8 +44,8 @@ const Gallery: React.FC = () => {
               key={category}
               onClick={() => setActiveCategory(category)}
               className={`px-6 py-3 rounded-full font-body font-medium transition-all duration-300 ${activeCategory === category
-                  ? "bg-primary text-white shadow-lg"
-                  : "bg-gray-100 text-neutral-dark hover:bg-gray-200"
+                ? "bg-primary text-white shadow-lg"
+                : "bg-gray-100 text-neutral-dark hover:bg-gray-200"
                 }`}
             >
               {category}
@@ -86,58 +55,63 @@ const Gallery: React.FC = () => {
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredImages.map((image) => (
-            <div
-              key={image.src}
-              className="group relative overflow-hidden rounded-3xl cursor-pointer transform transition-all duration-500 hover:scale-105"
-              onClick={() => setSelectedImage(image.src)}
-            >
-              <div className="relative w-full h-64">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              </div>
+          {filteredImages.map((image, index) => {
+            const imageUrl = image.image.data ? contentService.getStrapiUrl(image.image.data.attributes.url) : "";
+            if (!imageUrl) return null;
 
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <div className="text-xs font-body font-medium text-secondary mb-2 uppercase tracking-wider">
-                    {image.category}
-                  </div>
-                  <h3 className="font-display text-lg font-bold mb-2">
-                    {image.title}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-body">Detayları Görün</span>
-                    <svg
-                      className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+            return (
+              <div
+                key={index}
+                className="group relative overflow-hidden rounded-3xl cursor-pointer transform transition-all duration-500 hover:scale-105"
+                onClick={() => setSelectedImage(imageUrl)}
+              >
+                <div className="relative w-full h-64">
+                  <Image
+                    src={imageUrl}
+                    alt={image.alt || image.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <div className="text-xs font-body font-medium text-secondary mb-2 uppercase tracking-wider">
+                      {image.category}
+                    </div>
+                    <h3 className="font-display text-lg font-bold mb-2">
+                      {image.title}
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-body">Detayları Görün</span>
+                      <svg
+                        className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Category Badge */}
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center justify-center">
-                <span className="text-xs font-body font-medium text-neutral-dark">
-                  {image.category}
-                </span>
+                {/* Category Badge */}
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center justify-center">
+                  <span className="text-xs font-body font-medium text-neutral-dark">
+                    {image.category}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Lightbox Modal */}

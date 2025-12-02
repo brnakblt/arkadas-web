@@ -4,8 +4,6 @@ import './globals.css'
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 config.autoAddCss = false
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import CookieConsent from '@/components/CookieConsent'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -73,12 +71,8 @@ export default function RootLayout({
           <a href="#main-content" className="skip-link">
             Ana içeriğe geç
           </a>
-          <Header />
-          <main id="main-content" role="main">
-            {children}
-          </main>
+          {children}
           <CookieConsent />
-          <Footer />
         </Providers>
       </body>
     </html>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+// import { useSession, signIn } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileWord, faFileExcel, faFilePowerpoint, faCloudUploadAlt, faEdit, faDownload } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,7 +13,7 @@ const MOCK_DOCUMENTS = [
 ];
 
 export default function DocumentsPage() {
-    const { data: session } = useSession();
+    // const { data: session } = useSession();
     const [documents, setDocuments] = useState(MOCK_DOCUMENTS);
     const [isUploading, setIsUploading] = useState(false);
 
@@ -46,10 +46,10 @@ export default function DocumentsPage() {
     };
 
     const handleEdit = async (doc: any) => {
-        if (!session) {
-            signIn('azure-ad');
-            return;
-        }
+        // if (!session) {
+        //     signIn('azure-ad');
+        //     return;
+        // }
 
         // Use doc.url if available (from Strapi), otherwise fallback to mock logic or error
         // For mock data, we don't have a real URL, so we can't really test this without a real file.

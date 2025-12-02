@@ -2,18 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { HeroData, contentService } from "@/services/contentService";
 
-const images = [
-  "/images/1.webp",
-  "/images/2.webp",
-  "/images/3.webp",
-  "/images/4.webp",
-  "/images/5.webp",
-  "/images/6.webp",
-];
+interface HeroProps {
+  data: HeroData;
+}
 
-const Hero: React.FC = () => {
+const Hero: React.FC<HeroProps> = ({ data }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const images = data.images.data.map(img => contentService.getStrapiUrl(img.attributes.url));
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
@@ -28,9 +26,12 @@ const Hero: React.FC = () => {
   };
 
   useEffect(() => {
+    if (images.length === 0) return;
     const interval = setInterval(nextImage, 5000);
     return () => clearInterval(interval);
-  }, [currentImageIndex]);
+  }, [currentImageIndex, images.length]);
+
+  if (!data) return null;
 
   return (
     <section
@@ -119,13 +120,11 @@ const Hero: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-white bg-black/20 p-8 rounded-lg backdrop-blur-sm">
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Her Çocuk
-              <span className="block text-secondary">Özel ve Değerli</span>
+              {data.title}
+              {data.subtitle && <span className="block text-secondary">{data.subtitle}</span>}
             </h1>
             <p className="font-body text-lg sm:text-xl text-white/90 mb-8 leading-relaxed">
-              Özel eğitim ve rehabilitasyon alanında uzman kadromuzla, her
-              çocuğun potansiyelini keşfetmesi ve gelişmesi için bireysel eğitim
-              programları sunuyoruz.
+              {data.description}
             </p>
             <div className="hidden md:flex flex-col sm:flex-row gap-4">
               <button
@@ -154,38 +153,16 @@ const Hero: React.FC = () => {
           {/* Stats */}
           <div className="hidden lg:block">
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-secondary mb-2">
-                  500+
+              {data.stats.map((stat, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 text-center">
+                  <div className="text-3xl font-bold text-secondary mb-2">
+                    {stat.value}
+                  </div>
+                  <div className="font-body text-neutral-dark/80">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="font-body text-neutral-dark/80">
-                  Başarılı Öğrenci
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-secondary mb-2">
-                  15+
-                </div>
-                <div className="font-body text-neutral-dark/80">
-                  Yıl Deneyim
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-secondary mb-2">
-                  98%
-                </div>
-                <div className="font-body text-neutral-dark/80">
-                  Aile Memnuniyeti
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-secondary mb-2">
-                  24/7
-                </div>
-                <div className="font-body text-neutral-dark/80">
-                  Destek Hattı
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

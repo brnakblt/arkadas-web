@@ -1,57 +1,42 @@
 "use client";
 
 import React, { useState, useRef, useLayoutEffect, createRef, useCallback } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import {
+  faUsers,
+  faClipboardList,
+  faBullseye,
+  faUserFriends,
+  faChartLine,
+  faHandshake,
+} from "@fortawesome/free-solid-svg-icons";
+import { ProcessData } from "@/services/contentService";
 
-const Process: React.FC = () => {
-  const steps = [
-    {
-      number: "01",
-      title: "İlk Görüşme",
-      description:
-        "Çocuğunuzla tanışır ve ailenizle detaylı bir görüşme gerçekleştiririz.",
-      icon: "👥",
-    },
-    {
-      number: "02",
-      title: "Bireysel Eğitim Planı",
-      description:
-        "Değerlendirme sonuçlarına göre çocuğunuza özel bireysel eğitim programı hazırlarız.",
-      icon: "📋",
-    },
-    {
-      number: "03",
-      title: "Eğitim Sürecinin Başlatılması",
-      description:
-        "Uzman öğretmenlerimiz ve terapistlerimizle bireysel eğitim seanslarına başlarız.",
-      icon: "🎯",
-    },
-    {
-      number: "04",
-      title: "Aile Eğitimi ve Danışmanlık",
-      description:
-        "Ailelere evde uygulayabilecekleri stratejiler ve destek programları sağlarız.",
-      icon: "👨‍👩‍👧‍👦",
-    },
-    {
-      number: "05",
-      title: "Düzenli Takip ve Değerlendirme",
-      description:
-        "Çocuğunuzun gelişimini düzenli olarak takip eder, programı güncelleriz.",
-      icon: "📊",
-    },
-    {
-      number: "06",
-      title: "Sürekli Destek",
-      description:
-        "Eğitim süreci boyunca ve sonrasında sürekli destek ve danışmanlık hizmeti veriyoruz.",
-      icon: "🤝",
-    },
-  ];
+interface ProcessProps {
+  data: ProcessData[];
+}
 
+const iconMap: { [key: string]: IconProp } = {
+  users: faUsers,
+  "clipboard-list": faClipboardList,
+  bullseye: faBullseye,
+  "user-friends": faUserFriends,
+  "chart-line": faChartLine,
+  handshake: faHandshake,
+};
+
+const Process: React.FC<ProcessProps> = ({ data }) => {
   const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
   const [points, setPoints] = useState<Array<{ x: number; y: number }>>([]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const stepRefs = useRef(steps.map(() => createRef<HTMLDivElement>()));
+  // Use data length for refs if data exists, otherwise 0
+  const stepRefs = useRef((data || []).map(() => createRef<HTMLDivElement>()));
+
+  // Update refs when data changes
+  useLayoutEffect(() => {
+    stepRefs.current = (data || []).map(() => createRef<HTMLDivElement>());
+  }, [data]);
 
   const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
     let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -64,7 +49,7 @@ const Process: React.FC = () => {
   };
 
   const updatePath = useCallback(() => {
-    if (containerRef.current) {
+    if (containerRef.current && data && data.length > 0) {
       const containerRect = containerRef.current.getBoundingClientRect();
       setSvgDimensions({ width: containerRect.width, height: containerRect.height });
 
@@ -80,7 +65,7 @@ const Process: React.FC = () => {
       });
       setPoints(newPoints);
     }
-  }, []);
+  }, [data]);
 
   useLayoutEffect(() => {
     updatePath();
@@ -128,6 +113,7 @@ const Process: React.FC = () => {
     );
   };
 
+  if (!data) return null;
 
   return (
     <section
@@ -155,7 +141,7 @@ const Process: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-x-16 lg:gap-y-20 relative z-10">
-            {steps.map((step, index) => (
+            {data.map((step, index) => (
               <div
                 key={index}
                 ref={stepRefs.current[index]}
@@ -166,8 +152,11 @@ const Process: React.FC = () => {
                     {step.number}
                   </span>
                 </div>
-                <div className="text-5xl mb-6 mt-10 text-center filter drop-shadow-lg">
-                  {step.icon}
+                <div className="text-5xl mb-6 mt-10 text-center filter drop-shadow-lg flex justify-center">
+                  <FontAwesomeIcon
+                    icon={iconMap[step.icon] || faUsers}
+                    className="text-5xl text-primary"
+                  />
                 </div>
                 <h3 className="font-display text-xl font-bold text-neutral-dark mb-4 group-hover:text-primary transition-colors duration-300 text-center">
                   {step.title}

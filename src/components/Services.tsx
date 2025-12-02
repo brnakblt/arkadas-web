@@ -9,20 +9,31 @@ import {
   faBrain,
 } from "@fortawesome/free-solid-svg-icons";
 import Modal from "./Modal";
+import { ServiceData } from "@/services/contentService";
 
-interface Service {
-  icon: IconProp;
-  title: string;
-  description: string;
-  features: string[];
+interface ServicesProps {
+  data: ServiceData[];
 }
 
-const Services: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+const iconMap: { [key: string]: IconProp } = {
+  comments: faComments,
+  brain: faBrain,
+  users: faUsers,
+};
 
-  const openModal = (service: Service) => {
-    setSelectedService(service);
+const Services: React.FC<ServicesProps> = ({ data }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any | null>(null);
+
+  const openModal = (service: ServiceData) => {
+    // Transform ServiceData to match Modal's expected format if necessary
+    // Assuming Modal expects features as string[]
+    const modalService = {
+      ...service,
+      icon: iconMap[service.icon] || faUsers,
+      features: service.features.map(f => f.text)
+    };
+    setSelectedService(modalService);
     setIsModalOpen(true);
   };
 
@@ -31,44 +42,7 @@ const Services: React.FC = () => {
     setSelectedService(null);
   };
 
-  const services: Service[] = [
-    {
-      icon: faComments,
-      title: "Dil ve Konuşma Terapisi",
-      description:
-        "Dil ve konuşma bozuklukları olan çocuklar için bireysel terapi programları ve aile eğitimi.",
-      features: [
-        "Artikülasyon Terapisi",
-        "Dil Gelişimi",
-        "Sosyal İletişim",
-        "Aile Danışmanlığı",
-      ],
-    },
-    {
-      icon: faBrain,
-      title: "Özel Eğitim Programları",
-      description:
-        "Özel gereksinimli çocuklar için bireysel eğitim planları ve akademik destek programları.",
-      features: [
-        "Bireysel Eğitim Planı",
-        "Akademik Beceriler",
-        "Sosyal Beceriler",
-        "Günlük Yaşam Becerileri",
-      ],
-    },
-    {
-      icon: faUsers,
-      title: "Rehabilitasyon Hizmetleri",
-      description:
-        "Fiziksel ve bilişsel rehabilitasyon programları ile çocukların gelişimini destekleme.",
-      features: [
-        "Fizyoterapi",
-        "Ergoterapisi",
-        "Bilişsel Rehabilitasyon",
-        "Oyun Terapisi",
-      ],
-    },
-  ];
+  if (!data) return null;
 
   return (
     <section
@@ -103,7 +77,7 @@ const Services: React.FC = () => {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
+          {data.map((service, index) => (
             <div
               key={index}
               className="group bg-white rounded-3xl p-8 card-shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden"
@@ -115,7 +89,7 @@ const Services: React.FC = () => {
                 {/* Icon */}
                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
                   <FontAwesomeIcon
-                    icon={service.icon}
+                    icon={iconMap[service.icon] || faUsers}
                     className="text-2xl text-primary group-hover:text-white transition-colors duration-500"
                   />
                 </div>
@@ -138,7 +112,7 @@ const Services: React.FC = () => {
                     >
                       <div className="w-2 h-2 bg-secondary rounded-full flex-shrink-0"></div>
                       <span className="font-body text-sm text-neutral-dark/70">
-                        {feature}
+                        {feature.text}
                       </span>
                     </li>
                   ))}
