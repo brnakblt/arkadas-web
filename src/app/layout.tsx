@@ -64,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className="smooth-scroll">
+    <html lang="tr" className="smooth-scroll" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfairDisplay.variable} font-body bg-neutral-light`}>
         <Providers>
           <DeepLinkHandler />

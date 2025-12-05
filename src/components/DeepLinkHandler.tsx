@@ -8,6 +8,11 @@ export default function DeepLinkHandler() {
     const router = useRouter();
 
     useEffect(() => {
+        // Check if running in Tauri environment
+        if (typeof window === 'undefined' || !('__TAURI_INTERNALS__' in window)) {
+            return;
+        }
+
         let unlisten: (() => void) | undefined;
 
         const initDeepLink = async () => {
