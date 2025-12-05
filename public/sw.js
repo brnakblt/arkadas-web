@@ -1,1 +1,93 @@
-if(!self.define){let e,a={};const i=(i,s)=>(i=new URL(i+".js",s).href,a[i]||new Promise(a=>{if("document"in self){const e=document.createElement("script");e.src=i,e.onload=a,document.head.appendChild(e)}else e=i,importScripts(i),a()}).then(()=>{let e=a[i];if(!e)throw new Error(`Module ${i} didn’t register its module`);return e}));self.define=(s,c)=>{const n=e||("document"in self?document.currentScript.src:"")||location.href;if(a[n])return;let d={};const b=e=>i(e,n),r={module:{uri:n},exports:d,require:b};a[n]=Promise.all(s.map(e=>r[e]||b(e))).then(e=>(c(...e),d))}}define(["./workbox-5dd87cdc"],function(e){"use strict";importScripts(),self.skipWaiting(),e.clientsClaim(),e.precacheAndRoute([{url:"/_next/static/chunks/4bd1b696-deba172d32c79f82.js",revision:"deba172d32c79f82"},{url:"/_next/static/chunks/500-3ff701859ea2af56.js",revision:"3ff701859ea2af56"},{url:"/_next/static/chunks/610-d9a4e863903ea86b.js",revision:"d9a4e863903ea86b"},{url:"/_next/static/chunks/772-22d841bc00c8eefd.js",revision:"22d841bc00c8eefd"},{url:"/_next/static/chunks/870fdd6f-d32a442fba479160.js",revision:"d32a442fba479160"},{url:"/_next/static/chunks/928-21af8317430cb50b.js",revision:"21af8317430cb50b"},{url:"/_next/static/chunks/app/(site)/layout-f9c1090172af6fbb.js",revision:"f9c1090172af6fbb"},{url:"/_next/static/chunks/app/(site)/page-3f8cd290eb3c3810.js",revision:"3f8cd290eb3c3810"},{url:"/_next/static/chunks/app/_global-error/page-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/app/_not-found/page-5cdd2611841dfc4d.js",revision:"5cdd2611841dfc4d"},{url:"/_next/static/chunks/app/auth/callback/page-0533ac34d583b31c.js",revision:"0533ac34d583b31c"},{url:"/_next/static/chunks/app/dashboard/activity/page-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/app/dashboard/documents/page-4acc823619fe1710.js",revision:"4acc823619fe1710"},{url:"/_next/static/chunks/app/dashboard/layout-bb01b542f95fc989.js",revision:"bb01b542f95fc989"},{url:"/_next/static/chunks/app/dashboard/page-56a9f81304058dd9.js",revision:"56a9f81304058dd9"},{url:"/_next/static/chunks/app/dashboard/photos/page-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/app/layout-c84e1092b2185001.js",revision:"c84e1092b2185001"},{url:"/_next/static/chunks/framework-292291387d6b2e39.js",revision:"292291387d6b2e39"},{url:"/_next/static/chunks/main-app-d1d545615896f768.js",revision:"d1d545615896f768"},{url:"/_next/static/chunks/main-c52669e2ad0c57d3.js",revision:"c52669e2ad0c57d3"},{url:"/_next/static/chunks/next/dist/client/components/builtin/app-error-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/next/dist/client/components/builtin/forbidden-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/next/dist/client/components/builtin/global-error-613450abb7c9ded4.js",revision:"613450abb7c9ded4"},{url:"/_next/static/chunks/next/dist/client/components/builtin/not-found-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/next/dist/client/components/builtin/unauthorized-7872be08cb658da0.js",revision:"7872be08cb658da0"},{url:"/_next/static/chunks/polyfills-42372ed130431b0a.js",revision:"846118c33b2c0e922d7b3a7676f81f6f"},{url:"/_next/static/chunks/webpack-02a59d38943f106d.js",revision:"02a59d38943f106d"},{url:"/_next/static/css/16fd0b411b5a9c48.css",revision:"16fd0b411b5a9c48"},{url:"/_next/static/media/19cfc7226ec3afaa-s.woff2",revision:"9dda5cfc9a46f256d0e131bb535e46f8"},{url:"/_next/static/media/21350d82a1f187e9-s.woff2",revision:"4e2553027f1d60eff32898367dd4d541"},{url:"/_next/static/media/28a2004cf8372660-s.woff2",revision:"a81e6c6c3493caf3463c36f633996e92"},{url:"/_next/static/media/47f136985ef5b5cb-s.woff2",revision:"62f762afb90d7743f6916ea0cce473af"},{url:"/_next/static/media/4ead58c4dcc3f285-s.woff2",revision:"774586d4bcb09cb42f38fc490d25b01b"},{url:"/_next/static/media/8e9860b6e62d6359-s.woff2",revision:"01ba6c2a184b8cba08b0d57167664d75"},{url:"/_next/static/media/ba9851c3c22cd980-s.woff2",revision:"9e494903d6b0ffec1a1e14d34427d44d"},{url:"/_next/static/media/c5fe6dc8356a8c31-s.woff2",revision:"027a89e9ab733a145db70f09b8a18b42"},{url:"/_next/static/media/df0a9ae256c0569c-s.woff2",revision:"d54db44de5ccb18886ece2fda72bdfe0"},{url:"/_next/static/media/e4af272ccee01ff0-s.p.woff2",revision:"65850a373e258f1c897a2b3d75eb74de"},{url:"/_next/static/media/eaead17c7dbfcd5d-s.p.woff2",revision:"6da252de0cbc8a69b5d5c2e0e3f67722"},{url:"/_next/static/y65bRQ-HuGhCqlz6s_ysN/_buildManifest.js",revision:"a419855dce9f08077be3971ab79efcea"},{url:"/_next/static/y65bRQ-HuGhCqlz6s_ysN/_ssgManifest.js",revision:"b6652df95db52feb4daf4eca35380933"},{url:"/icons/icon-192x192.png",revision:"8600e199492b0068c758f8b06b612f13"},{url:"/icons/icon-512x512.png",revision:"050798000325402bbc919b6ebea32308"},{url:"/images/1.webp",revision:"840106fe5d0bae9001ed0bac20b53102"},{url:"/images/2.webp",revision:"ea70a494aecc14f1ec8968db93816bae"},{url:"/images/3.webp",revision:"5509b52c101e76f5ae7e2a9c23a1febc"},{url:"/images/4.webp",revision:"acf9134d53491c04332afc8e2cddb76b"},{url:"/images/5.webp",revision:"264f4862c88ab304b7f1a544c187e5bf"},{url:"/images/6.webp",revision:"a8574199ce44e73d0e967e856772c955"},{url:"/images/ahmetsaitkurt.webp",revision:"c946d524a95309ea098b24422b006131"},{url:"/images/damlamercan.webp",revision:"facac9cea775dadb97054a1c879e67b9"},{url:"/images/deryaisik.webp",revision:"d16ef71f2ff8dabad7409d02e2a255f4"},{url:"/images/edaizmirli.webp",revision:"20af850b7aa8fe99087a5ad77a6a4ca8"},{url:"/images/eminearzuhorzum.webp",revision:"f3bf00592c9dfe787d759a3204b0d747"},{url:"/images/favicon.svg",revision:"761990548e6f483c446c3feeed7885d1"},{url:"/images/gayenuryildiz.webp",revision:"f064da036d827a826176cb8228cf8bbb"},{url:"/images/halilcetinkaya.webp",revision:"e884f90e248e10362905d4e63f41d671"},{url:"/images/hasibehosgeren.webp",revision:"3635d34dca04d35a63b9589132d6014a"},{url:"/images/haticekarkin.webp",revision:"fecdda3b0087855d311b6e69f0c93d81"},{url:"/images/huseyinibze.webp",revision:"714f80e46f5576c04a2db9cc9203b7ab"},{url:"/images/ibrahimkayaalp.webp",revision:"a4e17501dff194f6e047320419b353d7"},{url:"/images/ipekkurt.webp",revision:"124e1497b81cf10025ef100e7bc02833"},{url:"/images/logo.svg",revision:"92701eb7f09ee9e216dbf090d4a6a6d2"},{url:"/images/muzeyyenkaleli.webp",revision:"02cd61740a37e42e865fb0c02678c54a"},{url:"/images/nuraycetinkaya.webp",revision:"cb21d103986d8096c14bddd5938cbe45"},{url:"/images/omurmutlu.webp",revision:"1d021f0cdc28db912356a56e2a9e25d5"},{url:"/images/pinargul.webp",revision:"65766aa906407b37087235622281ccc5"},{url:"/images/pinarselcuk.webp",revision:"2104a39b20822c8365cd2e957b4b658b"},{url:"/images/rukenemektar.webp",revision:"e50365f30fa48664604eeef9465bc002"},{url:"/images/senaygokceoglu.webp",revision:"254960acd6cb08fc9fb234b843a6e165"},{url:"/images/sibelgoren.webp",revision:"28b2e6c56a196d740e9ea6a0ccab3b73"},{url:"/images/sinemmutlu.webp",revision:"59ec5d5d62b03869966e0bab0e16310c"},{url:"/images/turkanpoyraz.webp",revision:"a6fe64ee854de735ae268573ec05cdb3"},{url:"/images/yusufziyatavil.webp",revision:"c6f4ccd54de7560a5220574b777dd668"},{url:"/images/zulalefeilgun.webp",revision:"ec9a17ab661cd52e43b3bf3fb18ff349"},{url:"/manifest.json",revision:"461972336b581a1014bd404062ce3366"},{url:"/swe-worker-5c72df51bb1f6ee0.js",revision:"76fdd3369f623a3edcf74ce2200bfdd0"}],{ignoreURLParametersMatching:[/^utm_/,/^fbclid$/]}),e.cleanupOutdatedCaches(),e.registerRoute("/",new e.NetworkFirst({cacheName:"start-url",plugins:[{cacheWillUpdate:async({response:e})=>e&&"opaqueredirect"===e.type?new Response(e.body,{status:200,statusText:"OK",headers:e.headers}):e}]}),"GET"),e.registerRoute(/^http:\/\/127\.0\.0\.1:1337\/api\/.*$/,new e.NetworkOnly({plugins:[new e.BackgroundSyncPlugin("api-queue",{maxRetentionTime:1440})]}),"GET"),e.registerRoute(/^http:\/\/127\.0\.0\.1:1337\/uploads\/.*$/,new e.StaleWhileRevalidate({cacheName:"strapi-images",plugins:[new e.ExpirationPlugin({maxEntries:50,maxAgeSeconds:2592e3})]}),"GET"),self.__WB_DISABLE_DEV_LOGS=!0});
+/**
+ * Copyright 2018 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// If the loader is already loaded, just stop.
+if (!self.define) {
+  let registry = {};
+
+  // Used for `eval` and `importScripts` where we can't get script URL by other means.
+  // In both cases, it's safe to use a global var because those functions are synchronous.
+  let nextDefineUri;
+
+  const singleRequire = (uri, parentUri) => {
+    uri = new URL(uri + ".js", parentUri).href;
+    return registry[uri] || (
+      
+        new Promise(resolve => {
+          if ("document" in self) {
+            const script = document.createElement("script");
+            script.src = uri;
+            script.onload = resolve;
+            document.head.appendChild(script);
+          } else {
+            nextDefineUri = uri;
+            importScripts(uri);
+            resolve();
+          }
+        })
+      
+      .then(() => {
+        let promise = registry[uri];
+        if (!promise) {
+          throw new Error(`Module ${uri} didn’t register its module`);
+        }
+        return promise;
+      })
+    );
+  };
+
+  self.define = (depsNames, factory) => {
+    const uri = nextDefineUri || ("document" in self ? document.currentScript.src : "") || location.href;
+    if (registry[uri]) {
+      // Module is already loading or loaded.
+      return;
+    }
+    let exports = {};
+    const require = depUri => singleRequire(depUri, uri);
+    const specialDeps = {
+      module: { uri },
+      exports,
+      require
+    };
+    registry[uri] = Promise.all(depsNames.map(
+      depName => specialDeps[depName] || require(depName)
+    )).then(deps => {
+      factory(...deps);
+      return exports;
+    });
+  };
+}
+define(['./workbox-7144475a'], (function (workbox) { 'use strict';
+
+  importScripts();
+  self.skipWaiting();
+  workbox.clientsClaim();
+  workbox.registerRoute("/", new workbox.NetworkFirst({
+    "cacheName": "start-url",
+    plugins: [{
+      cacheWillUpdate: async ({
+        response: e
+      }) => e && "opaqueredirect" === e.type ? new Response(e.body, {
+        status: 200,
+        statusText: "OK",
+        headers: e.headers
+      }) : e
+    }]
+  }), 'GET');
+  workbox.registerRoute(/.*/i, new workbox.NetworkOnly({
+    "cacheName": "dev",
+    plugins: []
+  }), 'GET');
+  self.__WB_DISABLE_DEV_LOGS = true;
+
+}));
