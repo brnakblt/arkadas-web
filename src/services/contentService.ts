@@ -1,9 +1,9 @@
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://127.0.0.1:1337";
 
 export interface StrapiSingleResponse<T> {
-  data: {
+  data: T & {
     id: number;
-    attributes: T;
+    documentId: string;
   };
   meta: {
     pagination?: {
@@ -16,10 +16,10 @@ export interface StrapiSingleResponse<T> {
 }
 
 export interface StrapiCollectionResponse<T> {
-  data: {
+  data: (T & {
     id: number;
-    attributes: T;
-  }[];
+    documentId: string;
+  })[];
   meta: {
     pagination?: {
       page: number;
@@ -31,34 +31,23 @@ export interface StrapiCollectionResponse<T> {
 }
 
 export interface Image {
-  data: {
-    id: number;
-    attributes: {
-      url: string;
-      alternativeText: string;
-      width: number;
-      height: number;
-    };
-  } | null;
+  id: number;
+  url: string;
+  alternativeText: string;
+  width: number;
+  height: number;
 }
 
 export interface ImageArray {
-  data: {
-    id: number;
-    attributes: {
-      url: string;
-      alternativeText: string;
-      width: number;
-      height: number;
-    };
-  }[];
+  data: Image[];
 }
 
 export interface HeroData {
   title: string;
   subtitle: string;
   description: string;
-  images: ImageArray;
+  images: Image[] | null; // Unified images type
+
   stats: {
     id: number;
     value: string;
@@ -98,7 +87,11 @@ export interface GalleryData {
 
 export const contentService = {
   async getHero(): Promise<StrapiSingleResponse<HeroData>> {
-    const response = await fetch(`${STRAPI_URL}/api/hero?populate=images,stats`, {
+    const params = new URLSearchParams();
+    params.append("populate[0]", "images");
+    params.append("populate[1]", "stats");
+
+    const response = await fetch(`${STRAPI_URL}/api/hero?${params.toString()}`, {
       next: { revalidate: 60 },
     });
     if (!response.ok) throw new Error("Failed to fetch hero data");
@@ -106,7 +99,10 @@ export const contentService = {
   },
 
   async getServices(): Promise<StrapiCollectionResponse<ServiceData>> {
-    const response = await fetch(`${STRAPI_URL}/api/services?populate=features`, {
+    const params = new URLSearchParams();
+    params.append("populate[0]", "features");
+
+    const response = await fetch(`${STRAPI_URL}/api/services?${params.toString()}`, {
       next: { revalidate: 60 },
     });
     if (!response.ok) throw new Error("Failed to fetch services data");
@@ -114,7 +110,11 @@ export const contentService = {
   },
 
   async getProcesses(): Promise<StrapiCollectionResponse<ProcessData>> {
-    const response = await fetch(`${STRAPI_URL}/api/processes?sort=number:asc`, {
+    // Strapi sorting: sort[0]=field:asc
+    const params = new URLSearchParams();
+    params.append("sort[0]", "number:asc");
+
+    const response = await fetch(`${STRAPI_URL}/api/processes?${params.toString()}`, {
       next: { revalidate: 60 },
     });
     if (!response.ok) throw new Error("Failed to fetch processes data");
@@ -130,13 +130,16 @@ export const contentService = {
   },
 
   async getGallery(): Promise<StrapiCollectionResponse<GalleryData>> {
-    const response = await fetch(`${STRAPI_URL}/api/galleries?populate=image`, {
+    const params = new URLSearchParams();
+    params.append("populate[0]", "image");
+
+    const response = await fetch(`${STRAPI_URL}/api/galleries?${params.toString()}`, {
       next: { revalidate: 60 },
     });
     if (!response.ok) throw new Error("Failed to fetch gallery data");
     return response.json();
   },
-  
+
   getStrapiUrl(path: string) {
     if (!path) return "";
     if (path.startsWith("http")) return path;

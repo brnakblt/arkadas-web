@@ -7,24 +7,18 @@ import Link from "next/link";
 const Team: React.FC = () => {
   interface TeamMember {
     id: number;
-    attributes: {
-      name: string;
-      title: string;
-      category: string[];
-      image: {
-        data: {
-          attributes: {
-            url: string;
-            alternativeText?: string;
-          };
-        };
-      };
-      specialization: string;
-      description: string;
-      objectPosition?: string;
-      order: number;
-      link?: string;
-    };
+    name: string;
+    title: string;
+    category: string[]; // JSON field returns array directly
+    image: {
+      url: string;
+      alternativeText?: string;
+    } | null;
+    specialization: string;
+    description: string;
+    objectPosition?: string;
+    order: number;
+    link?: string;
   }
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -54,23 +48,33 @@ const Team: React.FC = () => {
       }
       const data = await response.json();
 
+      // Strapi v5 returns flattened data in data.data
       const formattedMembers: TeamMember[] = data.data.map((member: any) => {
-        const category = member.attributes.category || [];
+        // category is a JSON field. We need to normalize it to string[].
+        let category: string[] = [];
+        const rawCat = member.category;
+
+        if (Array.isArray(rawCat)) {
+          category = rawCat.map((c: any) => typeof c === 'string' ? c : c?.role || JSON.stringify(c));
+        } else if (typeof rawCat === 'string') {
+          category = [rawCat];
+        } else if (typeof rawCat === 'object' && rawCat !== null) {
+          if (rawCat.role) category = [rawCat.role];
+          else category = [];
+        }
 
         return {
           ...member,
-          attributes: {
-            ...member.attributes,
-            category: category,
-          },
+          category: category,
         };
       });
+
 
       setTeamMembers(formattedMembers);
 
       const uniqueCategories = [
         ...new Set(
-          formattedMembers.flatMap((member) => member.attributes.category)
+          formattedMembers.flatMap((member) => member.category)
         ),
       ];
       // Remove "Tümü" and ensure categories are unique and valid
@@ -100,8 +104,8 @@ const Team: React.FC = () => {
     }
     return teamMembers.filter(
       (member) =>
-        member.attributes.category &&
-        member.attributes.category.includes(activeCategory)
+        member.category &&
+        member.category.includes(activeCategory)
     );
   }, [activeCategory, teamMembers]);
 
@@ -163,31 +167,30 @@ const Team: React.FC = () => {
                     <Image
                       unoptimized
                       src={
-                        member.attributes.image?.data?.attributes?.url
-                          ? `${STRAPI_URL}${member.attributes.image.data.attributes.url}`
+                        member.image?.url
+                          ? `${STRAPI_URL}${member.image.url}`
                           : "/images/placeholder.webp"
                       }
                       alt={
-                        member.attributes.image?.data?.attributes
-                          ?.alternativeText || member.attributes.name
+                        member.image?.alternativeText || member.name
                       }
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover rounded-2xl"
                       style={{
                         objectPosition:
-                          member.attributes.objectPosition || "center",
+                          member.objectPosition || "center",
                       }}
                     />
                   </div>
 
                   <div className="text-center px-2 pb-2 flex-shrink-0">
                     <h3 className="font-display text-lg font-bold text-neutral-dark mb-1">
-                      {member.attributes.name}
+                      {member.name}
                     </h3>
 
                     <p className="text-primary font-body font-medium text-sm mb-3">
-                      {member.attributes.title}
+                      {member.title}
                     </p>
                   </div>
                 </div>
@@ -197,10 +200,10 @@ const Team: React.FC = () => {
               </>
             );
 
-            return member.attributes.link ? (
+            return member.link ? (
               <Link
                 key={member.id}
-                href={member.attributes.link}
+                href={member.link}
                 className={`${cardClasses} cursor-pointer`} // Add cursor-pointer for links
               >
                 {CardContent}

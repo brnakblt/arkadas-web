@@ -10,6 +10,9 @@ import {
   faUserFriends,
   faChartLine,
   faHandshake,
+  faComments,
+  faSearch,
+  faMapMarkedAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { ProcessData } from "@/services/contentService";
 
@@ -24,6 +27,9 @@ const iconMap: { [key: string]: IconProp } = {
   "user-friends": faUserFriends,
   "chart-line": faChartLine,
   handshake: faHandshake,
+  chat: faComments,
+  search: faSearch,
+  map: faMapMarkedAlt,
 };
 
 const Process: React.FC<ProcessProps> = ({ data }) => {

@@ -11,7 +11,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ data }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const images = data.images.data.map(img => contentService.getStrapiUrl(img.attributes.url));
+  const images = data.images?.map(img => contentService.getStrapiUrl(img.url)) || [];
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>

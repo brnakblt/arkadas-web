@@ -56,7 +56,7 @@ const Gallery: React.FC<GalleryProps> = ({ data }) => {
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredImages.map((image, index) => {
-            const imageUrl = image.image.data ? contentService.getStrapiUrl(image.image.data.attributes.url) : "";
+            const imageUrl = image.image ? contentService.getStrapiUrl(image.image.url) : "";
             if (!imageUrl) return null;
 
             return (

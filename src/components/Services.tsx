@@ -7,6 +7,8 @@ import {
   faUsers,
   faComments,
   faBrain,
+  faBook,
+  faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
 import Modal from "./Modal";
 import { ServiceData } from "@/services/contentService";
@@ -19,6 +21,8 @@ const iconMap: { [key: string]: IconProp } = {
   comments: faComments,
   brain: faBrain,
   users: faUsers,
+  book: faBook,
+  speech: faCommentDots,
 };
 
 const Services: React.FC<ServicesProps> = ({ data }) => {

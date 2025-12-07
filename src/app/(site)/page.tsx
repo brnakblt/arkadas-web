@@ -30,11 +30,11 @@ export default function Home() {
           contentService.getGallery(),
         ]);
 
-        setHeroData(hero.data.attributes);
-        setServicesData(services.data.map(item => item.attributes));
-        setProcessesData(processes.data.map(item => item.attributes));
-        setFaqData(faq.data.map(item => item.attributes));
-        setGalleryData(gallery.data.map(item => item.attributes));
+        setHeroData(hero.data);
+        setServicesData(services.data);
+        setProcessesData(processes.data);
+        setFaqData(faq.data);
+        setGalleryData(gallery.data);
       } catch (error) {
         console.error("Error fetching content:", error);
       } finally {
