@@ -1,35 +1,24 @@
 "use client";
 
 import React, { useState, useRef, useLayoutEffect, createRef, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-  faUsers,
-  faClipboardList,
-  faBullseye,
-  faUserFriends,
-  faChartLine,
-  faHandshake,
-  faComments,
-  faSearch,
-  faMapMarkedAlt,
-} from "@fortawesome/free-solid-svg-icons";
 import { ProcessData } from "@/services/contentService";
 
 interface ProcessProps {
   data: ProcessData[];
 }
 
-const iconMap: { [key: string]: IconProp } = {
-  users: faUsers,
-  "clipboard-list": faClipboardList,
-  bullseye: faBullseye,
-  "user-friends": faUserFriends,
-  "chart-line": faChartLine,
-  handshake: faHandshake,
-  chat: faComments,
-  search: faSearch,
-  map: faMapMarkedAlt,
+const iconMap: { [key: string]: string } = {
+  users: "👥",
+  "clipboard-list": "📋",
+  bullseye: "🚀",
+  "user-friends": "👨‍👩‍👧‍👦",
+  "chart-line": "📈",
+  handshake: "🤝",
+  chat: "💬",
+  search: "🔍",
+  map: "🗺️",
+  "comments": "💬",
+  "brain": "🧠",
 };
 
 const Process: React.FC<ProcessProps> = ({ data }) => {
@@ -159,10 +148,7 @@ const Process: React.FC<ProcessProps> = ({ data }) => {
                   </span>
                 </div>
                 <div className="text-5xl mb-6 mt-10 text-center filter drop-shadow-lg flex justify-center">
-                  <FontAwesomeIcon
-                    icon={iconMap[step.icon] || faUsers}
-                    className="text-5xl text-primary"
-                  />
+                  <span className="text-6xl">{iconMap[step.icon] || step.icon || "📄"}</span>
                 </div>
                 <h3 className="font-display text-xl font-bold text-neutral-dark mb-4 group-hover:text-primary transition-colors duration-300 text-center">
                   {step.title}

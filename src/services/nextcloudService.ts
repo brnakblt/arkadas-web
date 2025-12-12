@@ -186,7 +186,7 @@ export class NextcloudService {
                 'Authorization': this.authHeader,
                 'Content-Type': 'application/octet-stream'
             },
-            body: content
+            body: content as any
         });
 
         if (!response.ok) {

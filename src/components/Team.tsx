@@ -77,10 +77,14 @@ const Team: React.FC = () => {
           formattedMembers.flatMap((member) => member.category)
         ),
       ];
-      // Remove "Tümü" and ensure categories are unique and valid
+      // Remove "Tümü" and ensure categories are unique and valid, excluding English roles
+      const excludedCategories = ["Specialist", "Coordinator", "Psychologist"];
       setCategories(
         [...defaultCategories, ...uniqueCategories].filter(
-          (value, index, self) => self.indexOf(value) === index && value
+          (value, index, self) =>
+            self.indexOf(value) === index &&
+            value &&
+            !excludedCategories.includes(value)
         )
       );
     } catch (err) {

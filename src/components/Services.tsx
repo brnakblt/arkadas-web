@@ -1,15 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import {
-  faUsers,
-  faComments,
-  faBrain,
-  faBook,
-  faCommentDots,
-} from "@fortawesome/free-solid-svg-icons";
 import Modal from "./Modal";
 import { ServiceData } from "@/services/contentService";
 
@@ -17,12 +8,12 @@ interface ServicesProps {
   data: ServiceData[];
 }
 
-const iconMap: { [key: string]: IconProp } = {
-  comments: faComments,
-  brain: faBrain,
-  users: faUsers,
-  book: faBook,
-  speech: faCommentDots,
+const iconMap: { [key: string]: string } = {
+  comments: "💬",
+  brain: "🧠",
+  users: "👥",
+  book: "📖",
+  speech: "🗨️",
 };
 
 const Services: React.FC<ServicesProps> = ({ data }) => {
@@ -34,7 +25,7 @@ const Services: React.FC<ServicesProps> = ({ data }) => {
     // Assuming Modal expects features as string[]
     const modalService = {
       ...service,
-      icon: iconMap[service.icon] || faUsers,
+      icon: iconMap[service.icon] || service.icon || "🔧",
       features: service.features.map(f => f.text)
     };
     setSelectedService(modalService);
@@ -79,12 +70,12 @@ const Services: React.FC<ServicesProps> = ({ data }) => {
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Services Slider */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
           {data.map((service, index) => (
             <div
               key={index}
-              className="group bg-white rounded-3xl p-8 card-shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden"
+              className="flex-shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] snap-center group bg-white rounded-3xl p-8 card-shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden"
             >
               {/* Background Gradient */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -92,10 +83,7 @@ const Services: React.FC<ServicesProps> = ({ data }) => {
               <div className="relative z-10">
                 {/* Icon */}
                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
-                  <FontAwesomeIcon
-                    icon={iconMap[service.icon] || faUsers}
-                    className="text-2xl text-primary group-hover:text-white transition-colors duration-500"
-                  />
+                  <span className="text-4xl">{iconMap[service.icon] || service.icon || "🔧"}</span>
                 </div>
 
                 {/* Content */}

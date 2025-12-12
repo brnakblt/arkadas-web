@@ -1,16 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+
+import { usePolicyModal } from "@/context/PolicyModalContext";
 
 const Footer: React.FC = () => {
+  const { openPolicyModal } = usePolicyModal();
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-      setShowBackToTop(scrollTop > 300);
+      // Check if user is near the bottom of the page (within 300px)
+      const isNearBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 300;
+      setShowBackToTop(isNearBottom);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -73,7 +78,13 @@ const Footer: React.FC = () => {
                 © 2025 Arkadaş Özel Eğitim
               </div>
 
-              <div className="flex flex-wrap gap-6">
+              <div className="flex flex-wrap gap-6 text-sm text-neutral-light/60">
+                <Link href="/kvkk-ve-aydinlatma-metni" className="hover:text-white transition-colors">
+                  KVKK ve Aydınlatma Metni
+                </Link>
+                <Link href="/cerez-politikasi" className="hover:text-white transition-colors">
+                  Çerez Politikası
+                </Link>
               </div>
             </div>
           </div>
@@ -81,7 +92,7 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Fixed Buttons */}
-      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-40">
+      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-[10000]">
         {/* WhatsApp Button */}
         <a
           href="https://wa.me/905068103321"

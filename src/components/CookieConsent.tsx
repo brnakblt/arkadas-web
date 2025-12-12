@@ -1,59 +1,73 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCookieBite, faTimes } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCookieBite, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { usePolicyModal } from "@/context/PolicyModalContext";
+import { useCookie } from "@/context/CookieContext";
 
 const CookieConsent: React.FC = () => {
+    const { openPolicyModal } = usePolicyModal();
+    const { consentStatus, acceptAll, rejectAll } = useCookie();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Check if user has already consented
-        const hasConsented = localStorage.getItem('cookieConsent');
-        if (!hasConsented) {
-            // Show banner after a short delay for better UX
-            const timer = setTimeout(() => {
-                setIsVisible(true);
-            }, 1000);
+        if (consentStatus === 'pending') {
+            const timer = setTimeout(() => setIsVisible(true), 1000);
             return () => clearTimeout(timer);
+        } else {
+            setIsVisible(false);
         }
-    }, []);
-
-    const handleAccept = () => {
-        localStorage.setItem('cookieConsent', 'true');
-        setIsVisible(false);
-    };
+    }, [consentStatus]);
 
     if (!isVisible) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6">
-            <div className="max-w-7xl mx-auto bg-white/90 backdrop-blur-md border border-gray-200 shadow-2xl rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-slide-up">
-                <div className="flex items-start md:items-center gap-4 flex-1">
-                    <div className="bg-primary/10 p-3 rounded-xl text-primary hidden md:block">
-                        <FontAwesomeIcon icon={faCookieBite} className="w-6 h-6" />
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] max-w-lg w-full px-4">
+            <div className="bg-white/95 backdrop-blur-md border border-gray-200 shadow-2xl rounded-2xl p-4 flex flex-col gap-4 animate-slide-up relative">
+                <button
+                    onClick={() => setIsVisible(false)}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                    aria-label="Kapat"
+                >
+                    <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                </button>
+
+                <div className="flex items-start gap-3">
+                    <div className="bg-primary/10 p-2 rounded-lg text-primary shrink-0">
+                        <FontAwesomeIcon icon={faCookieBite} className="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-neutral-dark mb-1">Çerez Politikası</h3>
-                        <p className="text-sm text-gray-600 leading-relaxed">
-                            Sizlere daha iyi hizmet sunabilmek, site trafiğini analiz etmek ve deneyiminizi kişiselleştirmek için sitemizde çerezlerden faydalanıyoruz.
-                            Sitemizi kullanmaya devam ederek çerez kullanımını kabul etmiş olursunuz.
+                        <h3 className="font-bold text-neutral-dark text-sm mb-1">Çerez Politikası</h3>
+                        <p className="text-xs text-gray-600 leading-relaxed">
+                            Deneyiminizi iyileştirmek için çerezleri kullanıyoruz.
+                            Detaylar için{" "}
+                            <button onClick={() => openPolicyModal('cookie')} className="text-primary hover:underline font-medium">
+                                Politikamızı
+                            </button>{" "}
+                            inceleyin.
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 w-full md:w-auto">
+
+                <div className="flex items-center gap-2 w-full">
                     <button
-                        onClick={handleAccept}
-                        className="flex-1 md:flex-none bg-primary text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 whitespace-nowrap"
+                        onClick={() => openPolicyModal('cookie')}
+                        className="flex-1 px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-all border border-gray-200"
                     >
-                        Kabul Et
+                        Ayarlar
                     </button>
                     <button
-                        onClick={() => setIsVisible(false)}
-                        className="md:hidden p-2.5 text-gray-400 hover:text-gray-600 transition-colors"
-                        aria-label="Kapat"
+                        onClick={rejectAll}
+                        className="flex-1 px-3 py-2 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-all border border-gray-200"
                     >
-                        <FontAwesomeIcon icon={faTimes} />
+                        Reddet
+                    </button>
+                    <button
+                        onClick={acceptAll}
+                        className="flex-1 bg-primary text-white px-3 py-2 rounded-lg text-xs font-semibold hover:bg-primary/90 transition-all shadow-md shadow-primary/20"
+                    >
+                        Kabul Et
                     </button>
                 </div>
             </div>
