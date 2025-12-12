@@ -1,5 +1,8 @@
 'use client';
 
+// Skip prerendering for static export
+export const dynamic = 'force-static';
+
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { authFetch } from '@/lib/auth';
