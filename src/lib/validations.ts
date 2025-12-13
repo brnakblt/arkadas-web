@@ -21,7 +21,8 @@ export const emailSchema = z.string()
     .min(1, 'E-posta zorunludur');
 
 export const passwordSchema = z.string()
-    .min(6, 'Şifre en az 6 karakter olmalıdır')
+    // SECURITY FIX #11: Increased min length from 6 to 8 per NIST guidelines
+    .min(8, 'Şifre en az 8 karakter olmalıdır')
     .max(100, 'Şifre çok uzun');
 
 export const tcKimlikSchema = z.string()

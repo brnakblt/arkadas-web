@@ -119,12 +119,15 @@ export interface SecurityHeadersConfig {
 
 /**
  * Default security headers configuration
+ * NOTE: For production, replace nonce placeholders with actual cryptographic nonces
  */
 export const defaultSecurityHeaders: SecurityHeadersConfig = {
     contentSecurityPolicy: [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://translate.google.com",
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        // SECURITY FIX #8: Removed unsafe-inline and unsafe-eval
+        // In production, use nonces: script-src 'self' 'nonce-{RANDOM}'
+        "script-src 'self' https://maps.googleapis.com https://translate.google.com",
+        "style-src 'self' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data: blob: https: http:",
         "connect-src 'self' https://api.*.arkadas.com.tr https://*.strapi.io wss: https://translate.google.com https://maps.googleapis.com",
@@ -134,6 +137,7 @@ export const defaultSecurityHeaders: SecurityHeadersConfig = {
         "base-uri 'self'",
         "form-action 'self'",
         "frame-ancestors 'self'",
+        "upgrade-insecure-requests",
     ].join('; '),
     strictTransportSecurity: true,
     xContentTypeOptions: true,
@@ -390,6 +394,14 @@ export async function parseJsonBody<T>(
 // ============================================================
 
 /**
+ * Escape special regex characters
+ * SECURITY FIX #9: Properly escape regex special chars before pattern construction
+ */
+function escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
  * Validate request origin for CORS
  */
 export function validateOrigin(
@@ -410,7 +422,9 @@ export function validateOrigin(
 
         if (allowed.includes('*')) {
             // Wildcard subdomain matching
-            const pattern = new RegExp('^' + allowed.replace(/\*/g, '.*') + '$');
+            // SECURITY FIX: Escape special regex chars except for wildcard replacement
+            const escapedAllowed = escapeRegex(allowed).replace(/\\\*/g, '.*');
+            const pattern = new RegExp('^' + escapedAllowed + '$');
             return pattern.test(origin);
         }
 

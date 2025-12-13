@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const GOOGLE_TTS_URL = 'https://translate.google.com/translate_tts';
 
+// SECURITY FIX #7: Maximum text length to prevent DoS
+const MAX_TEXT_LENGTH = 1000;
+
 export async function POST(request: NextRequest) {
     try {
         const { text, lang = 'tr' } = await request.json();
 
         if (!text || typeof text !== 'string') {
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+        }
+
+        // SECURITY: Enforce character limit to prevent DoS
+        if (text.length > MAX_TEXT_LENGTH) {
+            return NextResponse.json(
+                { error: `Text exceeds maximum length of ${MAX_TEXT_LENGTH} characters` },
+                { status: 400 }
+            );
         }
 
         // Split text into chunks (Google TTS has ~200 char limit)

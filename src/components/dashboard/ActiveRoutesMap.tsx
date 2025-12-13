@@ -1,12 +1,13 @@
 'use client';
 
 /**
- * Active Routes Map Widget
+ * Active Routes Map Widget - LAZY LOADED
  * 
- * Dashboard widget showing real-time service vehicle locations on a map.
+ * Only loads Google Maps API when user scrolls to this component.
+ * Saves API costs and improves initial page load performance.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 // ============================================================
 // Types
@@ -19,12 +20,12 @@ interface VehicleLocation {
     routeName: string;
     latitude: number;
     longitude: number;
-    speed: number; // km/h
-    heading: number; // degrees
+    speed: number;
+    heading: number;
     status: 'moving' | 'stopped' | 'idle';
     studentsOnboard: number;
     lastUpdate: Date;
-    eta?: string; // estimated time of arrival
+    eta?: string;
 }
 
 interface RouteInfo {
@@ -111,16 +112,59 @@ export function ActiveRoutesMap({
     const [routes, setRoutes] = useState<RouteInfo[]>([]);
     const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [mapError, setMapError] = useState<string | null>(null);
 
+    // 🔥 LAZY LOADING STATE
+    const [isVisible, setIsVisible] = useState(false);
+    const [shouldLoadMap, setShouldLoadMap] = useState(false);
+    const [userWantsMap, setUserWantsMap] = useState(false);
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+
+    // ============================================================
+    // Intersection Observer for Lazy Loading
+    // ============================================================
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        console.log('🗺️ Map widget came into view');
+                        setIsVisible(true);
+                    }
+                });
+            },
+            {
+                root: null,
+                rootMargin: '100px', // Load 100px before it becomes visible
+                threshold: 0.1,
+            }
+        );
+
+        if (mapContainerRef.current) {
+            observer.observe(mapContainerRef.current);
+        }
+
+        return () => {
+            if (mapContainerRef.current) {
+                observer.unobserve(mapContainerRef.current);
+            }
+        };
+    }, []);
+
+    // Only load map when:
+    // 1. Component is visible AND
+    // 2. User clicked "Load Map" button
+    useEffect(() => {
+        if (isVisible && userWantsMap && mapApiKey) {
+            console.log('🚀 Loading Google Maps API...');
+            setShouldLoadMap(true);
+        }
+    }, [isVisible, userWantsMap, mapApiKey]);
+
+    // ============================================================
     // Fetch vehicle locations
+    // ============================================================
     const fetchLocations = useCallback(async () => {
         try {
-            // In production, replace with actual API call
-            // const response = await fetch('/api/vehicles/locations');
-            // const data = await response.json();
-
-            // Simulate moving vehicles
             const updatedVehicles = mockVehicles.map((v) => ({
                 ...v,
                 latitude: v.latitude + (Math.random() - 0.5) * 0.001,
@@ -151,7 +195,7 @@ export function ActiveRoutesMap({
     const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
 
     return (
-        <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}>
+        <div ref={mapContainerRef} className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}>
             {/* Header */}
             <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4">
                 <div className="flex items-center justify-between">
@@ -172,16 +216,11 @@ export function ActiveRoutesMap({
                         <div className="h-64 lg:h-80 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
                             <div className="text-center">
                                 <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Harita yükleniyor...</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Yükleniyor...</p>
                             </div>
                         </div>
-                    ) : mapApiKey ? (
-                        // Real map would be rendered here with Google Maps or Mapbox
-                        <div className="h-64 lg:h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                            <p className="text-gray-500">Harita yükleniyor...</p>
-                        </div>
-                    ) : (
-                        // Placeholder map with vehicle positions
+                    ) : !shouldLoadMap ? (
+                        // 🔥 LAZY LOAD PLACEHOLDER - Don't load map until user clicks
                         <div className="h-64 lg:h-80 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-700 dark:to-gray-800 relative overflow-hidden">
                             {/* Simple grid background */}
                             <div className="absolute inset-0 opacity-20">
@@ -224,9 +263,45 @@ export function ActiveRoutesMap({
                                 </button>
                             ))}
 
-                            {/* Map placeholder text */}
-                            <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-gray-800/90 px-3 py-1 rounded-lg text-xs text-gray-600 dark:text-gray-400">
-                                Google Maps API key gerekli
+                            {/* 🔥 LOAD MAP BUTTON - Only appears when visible */}
+                            {!userWantsMap && isVisible && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+                                    <button
+                                        onClick={() => setUserWantsMap(true)}
+                                        className="bg-white dark:bg-gray-800 px-6 py-3 rounded-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105 flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        </svg>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-200">
+                                            Haritayı Yükle
+                                        </span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            (Google Maps API kullanılacak)
+                                        </span>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Placeholder text */}
+                            {!userWantsMap && (
+                                <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-gray-800/90 px-3 py-2 rounded-lg text-xs">
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        💡 Harita sadece butona bastığınızda yüklenecek
+                                    </p>
+                                    <p className="text-gray-500 dark:text-gray-500 mt-1">
+                                        API kullanımını azaltmak için
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        // Real Google Maps would be loaded here
+                        <div className="h-64 lg:h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <div className="text-center">
+                                <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                                <p className="text-gray-600 dark:text-gray-400">Google Maps yükleniyor...</p>
+                                <p className="text-xs text-gray-500 mt-1">Gerçek uygulamada buraya harita gelecek</p>
                             </div>
                         </div>
                     )}
