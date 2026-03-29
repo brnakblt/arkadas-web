@@ -1,6 +1,6 @@
 /**
  * Conversations API
- * Manage Nextcloud Talk conversations
+ * Manage Arkadaş Talk conversations
  */
 
 import { NextRequest, NextResponse } from 'next/server';

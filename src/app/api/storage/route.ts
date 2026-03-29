@@ -6,9 +6,9 @@ import { requireAuth } from "@/lib/cookieAuth";
 // Better to have a singleton in service that self-initializes or lazily initializes.
 // Looking at storageService.ts, it needs init().
 // We should probably ensure it's initialized.
-const NEXTCLOUD_URL = process.env.NEXTCLOUD_URL || "http://localhost:8088";
-const NEXTCLOUD_USER = process.env.NEXTCLOUD_ADMIN_USER || "admin";
-const NEXTCLOUD_PASS = process.env.NEXTCLOUD_ADMIN_PASSWORD || "password";
+const ARKADAS_URL = process.env.ARKADAS_URL || "http://localhost:8088";
+const ARKADAS_USER = process.env.ARKADAS_ADMIN_USER || "admin";
+const ARKADAS_PASS = process.env.ARKADAS_ADMIN_PASSWORD || "password";
 
 // Lazy init wrapper
 const getStorage = () => {
@@ -16,9 +16,9 @@ const getStorage = () => {
         storage.getWebDAVUrl();
     } catch {
         storage.init({
-            baseUrl: `${NEXTCLOUD_URL}/remote.php/dav/files/${NEXTCLOUD_USER}`,
-            username: NEXTCLOUD_USER,
-            password: NEXTCLOUD_PASS
+            baseUrl: `${ARKADAS_URL}/remote.php/dav/files/${ARKADAS_USER}`,
+            username: ARKADAS_USER,
+            password: ARKADAS_PASS
         });
     }
     return storage;

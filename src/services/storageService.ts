@@ -1,6 +1,6 @@
 /**
  * Storage Service
- * WebDAV client for file operations with Nextcloud
+ * WebDAV client for file operations with Arkadaş
  */
 
 import { createClient, WebDAVClient, FileStat } from 'webdav';

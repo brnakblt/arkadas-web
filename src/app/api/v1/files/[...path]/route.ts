@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createNextcloudClient, downloadFile, deleteFile, getFileInfo, moveFile } from '@/lib/nextcloud';
+import { createArkadaşClient, downloadFile, deleteFile, getFileInfo, moveFile } from '@/lib/arkadas';
 
 interface RouteParams {
     params: Promise<{ path: string[] }>;
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         const { searchParams } = new URL(request.url);
         const action = searchParams.get('action') || 'download';
 
-        const client = createNextcloudClient();
+        const client = createArkadaşClient();
 
         if (action === 'info') {
             const info = await getFileInfo(client, remotePath);
@@ -56,7 +56,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         const { path: pathSegments } = await params;
         const remotePath = '/' + pathSegments.join('/');
 
-        const client = createNextcloudClient();
+        const client = createArkadaşClient();
         await deleteFile(client, remotePath);
 
         return NextResponse.json({
@@ -88,7 +88,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const client = createNextcloudClient();
+        const client = createArkadaşClient();
         await moveFile(client, remotePath, destination);
         
         return NextResponse.json({

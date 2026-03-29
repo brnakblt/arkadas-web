@@ -15,13 +15,13 @@ if (fs.existsSync(envPath)) {
     });
 }
 
-const NEXTCLOUD_URL = envConfig.NEXT_PUBLIC_NEXTCLOUD_URL || "http://localhost:8080";
-const NEXTCLOUD_USER = envConfig.NEXTCLOUD_USER || "admin";
-const NEXTCLOUD_PASSWORD = envConfig.NEXTCLOUD_PASSWORD || "admin";
+const ARKADAS_URL = envConfig.NEXT_PUBLIC_ARKADAS_URL || "http://localhost:8080";
+const ARKADAS_USER = envConfig.ARKADAS_USER || "admin";
+const ARKADAS_PASSWORD = envConfig.ARKADAS_PASSWORD || "admin";
 
 async function getShareLink() {
-    const authHeader = 'Basic ' + Buffer.from(`${NEXTCLOUD_USER}:${NEXTCLOUD_PASSWORD}`).toString('base64');
-    const fullPath = `/ArkadasUsers/${NEXTCLOUD_USER}/test-document.docx`;
+    const authHeader = 'Basic ' + Buffer.from(`${ARKADAS_USER}:${ARKADAS_PASSWORD}`).toString('base64');
+    const fullPath = `/ArkadasUsers/${ARKADAS_USER}/test-document.docx`;
     
     console.log(`Creating share for ${fullPath}...`);
 
@@ -31,7 +31,7 @@ async function getShareLink() {
     body.append('permissions', '15'); // Edit
 
     try {
-        const response = await fetch(`${NEXTCLOUD_URL}/ocs/v1.php/apps/files_sharing/api/v1/shares?format=json`, {
+        const response = await fetch(`${ARKADAS_URL}/ocs/v1.php/apps/files_sharing/api/v1/shares?format=json`, {
             method: 'POST',
             headers: {
                 'OCS-APIRequest': 'true',
@@ -44,7 +44,7 @@ async function getShareLink() {
         const data = await response.json();
         if (data.ocs?.meta?.status === 'failure') {
              // Try getting existing share
-             const checkRes = await fetch(`${NEXTCLOUD_URL}/ocs/v1.php/apps/files_sharing/api/v1/shares?path=${encodeURIComponent(fullPath)}&reshares=true&format=json`, {
+             const checkRes = await fetch(`${ARKADAS_URL}/ocs/v1.php/apps/files_sharing/api/v1/shares?path=${encodeURIComponent(fullPath)}&reshares=true&format=json`, {
                 headers: { 'OCS-APIRequest': 'true', 'Authorization': authHeader }
             });
             const checkData = await checkRes.json();

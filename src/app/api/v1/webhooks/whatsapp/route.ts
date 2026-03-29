@@ -77,7 +77,7 @@ interface MessageMetadata {
 async function handleIncomingMessage(message: IncomingMessage, _metadata: MessageMetadata) {
     console.debug(`New message from ${message.from}: ${message.text?.body || '[media]'}`);
 
-    // TODO: Store message in database and/or forward to Nextcloud Talk
+    // TODO: Store message in database and/or forward to Arkadaş Talk
     // For now, just log it
 
     // You can implement auto-replies here

@@ -1,15 +1,15 @@
 /**
- * Nextcloud WebDAV Client Utility
- * Provides file operations through Nextcloud's WebDAV API
+ * Arkadaş WebDAV Client Utility
+ * Provides file operations through Arkadaş's WebDAV API
  */
 
 import { createClient, WebDAVClient, FileStat } from 'webdav';
 
-const NEXTCLOUD_URL = process.env.NEXTCLOUD_URL || 'http://localhost:8080';
-const NEXTCLOUD_ADMIN_USER = process.env.NEXTCLOUD_ADMIN_USER || 'admin';
-const NEXTCLOUD_ADMIN_PASSWORD = process.env.NEXTCLOUD_ADMIN_PASSWORD || '';
+const ARKADAS_URL = process.env.ARKADAS_URL || 'http://localhost:8080';
+const ARKADAS_ADMIN_USER = process.env.ARKADAS_ADMIN_USER || 'admin';
+const ARKADAS_ADMIN_PASSWORD = process.env.ARKADAS_ADMIN_PASSWORD || '';
 
-export interface NextcloudFile {
+export interface ArkadaşFile {
     filename: string;
     basename: string;
     type: 'file' | 'directory';
@@ -25,13 +25,13 @@ export interface UploadOptions {
 }
 
 /**
- * Create a Nextcloud WebDAV client for a specific user
+ * Create a Arkadaş WebDAV client for a specific user
  */
-export const createNextcloudClient = (username?: string, password?: string): WebDAVClient => {
-    const user = username || NEXTCLOUD_ADMIN_USER;
-    const pass = password || NEXTCLOUD_ADMIN_PASSWORD;
+export const createArkadaşClient = (username?: string, password?: string): WebDAVClient => {
+    const user = username || ARKADAS_ADMIN_USER;
+    const pass = password || ARKADAS_ADMIN_PASSWORD;
 
-    return createClient(`${NEXTCLOUD_URL}/remote.php/dav/files/${user}`, {
+    return createClient(`${ARKADAS_URL}/remote.php/dav/files/${user}`, {
         username: user,
         password: pass,
     });
@@ -41,9 +41,9 @@ export const createNextcloudClient = (username?: string, password?: string): Web
  * Create admin client for system operations
  */
 export const getAdminClient = (): WebDAVClient => {
-    return createClient(`${NEXTCLOUD_URL}/remote.php/dav/files/${NEXTCLOUD_ADMIN_USER}`, {
-        username: NEXTCLOUD_ADMIN_USER,
-        password: NEXTCLOUD_ADMIN_PASSWORD,
+    return createClient(`${ARKADAS_URL}/remote.php/dav/files/${ARKADAS_ADMIN_USER}`, {
+        username: ARKADAS_ADMIN_USER,
+        password: ARKADAS_ADMIN_PASSWORD,
     });
 };
 
@@ -53,7 +53,7 @@ export const getAdminClient = (): WebDAVClient => {
 export const listFiles = async (
     client: WebDAVClient,
     path: string = '/'
-): Promise<NextcloudFile[]> => {
+): Promise<ArkadaşFile[]> => {
     try {
         const contents = await client.getDirectoryContents(path) as FileStat[];
 
@@ -68,12 +68,12 @@ export const listFiles = async (
         }));
     } catch (error) {
         console.error('Error listing files:', error);
-        throw new Error('Failed to list files from Nextcloud');
+        throw new Error('Failed to list files from Arkadaş');
     }
 };
 
 /**
- * Upload a file to Nextcloud
+ * Upload a file to Arkadaş
  */
 export const uploadFile = async (
     client: WebDAVClient,
@@ -89,12 +89,12 @@ export const uploadFile = async (
         return true;
     } catch (error) {
         console.error('Error uploading file:', error);
-        throw new Error('Failed to upload file to Nextcloud');
+        throw new Error('Failed to upload file to Arkadaş');
     }
 };
 
 /**
- * Download a file from Nextcloud
+ * Download a file from Arkadaş
  */
 export const downloadFile = async (
     client: WebDAVClient,
@@ -105,7 +105,7 @@ export const downloadFile = async (
         return content;
     } catch (error) {
         console.error('Error downloading file:', error);
-        throw new Error('Failed to download file from Nextcloud');
+        throw new Error('Failed to download file from Arkadaş');
     }
 };
 
@@ -121,7 +121,7 @@ export const deleteFile = async (
         return true;
     } catch (error) {
         console.error('Error deleting file:', error);
-        throw new Error('Failed to delete file from Nextcloud');
+        throw new Error('Failed to delete file from Arkadaş');
     }
 };
 
@@ -137,7 +137,7 @@ export const createDirectory = async (
         return true;
     } catch (error) {
         console.error('Error creating directory:', error);
-        throw new Error('Failed to create directory in Nextcloud');
+        throw new Error('Failed to create directory in Arkadaş');
     }
 };
 
@@ -161,7 +161,7 @@ export const exists = async (
 export const getFileInfo = async (
     client: WebDAVClient,
     remotePath: string
-): Promise<NextcloudFile | null> => {
+): Promise<ArkadaşFile | null> => {
     try {
         const stat = await client.stat(remotePath) as FileStat;
         return {
@@ -191,7 +191,7 @@ export const moveFile = async (
         return true;
     } catch (error) {
         console.error('Error moving file:', error);
-        throw new Error('Failed to move file in Nextcloud');
+        throw new Error('Failed to move file in Arkadaş');
     }
 };
 
@@ -208,12 +208,12 @@ export const copyFile = async (
         return true;
     } catch (error) {
         console.error('Error copying file:', error);
-        throw new Error('Failed to copy file in Nextcloud');
+        throw new Error('Failed to copy file in Arkadaş');
     }
 };
 
 export default {
-    createNextcloudClient,
+    createArkadaşClient,
     getAdminClient,
     listFiles,
     uploadFile,

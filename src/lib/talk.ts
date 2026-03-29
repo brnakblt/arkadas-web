@@ -1,16 +1,16 @@
 /**
- * Nextcloud Talk Client
- * API client for Nextcloud Talk (Spreed) messaging
+ * Arkadaş Talk Client
+ * API client for Arkadaş Talk (Spreed) messaging
  * 
  * API Base: /ocs/v2.php/apps/spreed/api/v4
- * Docs: https://nextcloud-talk.readthedocs.io/en/latest/
+ * Docs: https://arkadas-talk.readthedocs.io/en/latest/
  */
 
-const NEXTCLOUD_URL = process.env.NEXTCLOUD_URL || 'http://localhost:8080';
-const NEXTCLOUD_USER = process.env.NEXTCLOUD_ADMIN_USER || 'admin';
-const NEXTCLOUD_PASSWORD = process.env.NEXTCLOUD_ADMIN_PASSWORD || '';
+const ARKADAS_URL = process.env.ARKADAS_URL || 'http://localhost:8080';
+const ARKADAS_USER = process.env.ARKADAS_ADMIN_USER || 'admin';
+const ARKADAS_PASSWORD = process.env.ARKADAS_ADMIN_PASSWORD || '';
 
-const API_BASE = `${NEXTCLOUD_URL}/ocs/v2.php/apps/spreed/api/v4`;
+const API_BASE = `${ARKADAS_URL}/ocs/v2.php/apps/spreed/api/v4`;
 
 // Conversation types
 export const ConversationType = {
@@ -75,8 +75,8 @@ export interface Participant {
  * Create authorization header
  */
 const getAuthHeaders = (userOverride?: string, passOverride?: string): HeadersInit => {
-    const user = userOverride || NEXTCLOUD_USER;
-    const pass = passOverride || NEXTCLOUD_PASSWORD;
+    const user = userOverride || ARKADAS_USER;
+    const pass = passOverride || ARKADAS_PASSWORD;
     const basicAuth = Buffer.from(`${user}:${pass}`).toString('base64');
 
     return {
@@ -88,7 +88,7 @@ const getAuthHeaders = (userOverride?: string, passOverride?: string): HeadersIn
 };
 
 /**
- * Make API request to Nextcloud Talk
+ * Make API request to Arkadaş Talk
  */
 const talkRequest = async <T>(
     endpoint: string,
