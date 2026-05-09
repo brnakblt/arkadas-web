@@ -4,7 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createArkadaşClient, uploadFile } from '@/lib/arkadas';
+import nextcloud from '@/lib/nextcloud';
+const { createNextcloudClient, uploadFile } = nextcloud;
 
 export async function POST(request: NextRequest) {
     try {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
             ? `${path}${file.name}`
             : `${path}/${file.name}`;
 
-        const client = createArkadaşClient();
+        const client = createNextcloudClient();
         await uploadFile(client, remotePath, buffer, {
             overwrite: true,
             contentType: file.type,

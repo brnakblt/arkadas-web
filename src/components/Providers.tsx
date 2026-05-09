@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { PolicyModalProvider } from "@/context/PolicyModalContext";
 import { CookieProvider } from "@/context/CookieContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { TwoFactorProvider } from "@/providers/TwoFactorProvider";
 import { initMonitoring } from "@/lib/monitoring";
 import ScrollToTop from "./ScrollToTop";
@@ -35,14 +36,16 @@ export function Providers({ children }: { children: ReactNode }) {
                 <>{children}</>
             ) : (
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                    <CookieProvider>
-                        <TwoFactorProvider>
-                            <PolicyModalProvider>
-                                <ScrollToTop />
-                                {children}
-                            </PolicyModalProvider>
-                        </TwoFactorProvider>
-                    </CookieProvider>
+                    <AuthProvider>
+                        <CookieProvider>
+                            <TwoFactorProvider>
+                                <PolicyModalProvider>
+                                    <ScrollToTop />
+                                    {children}
+                                </PolicyModalProvider>
+                            </TwoFactorProvider>
+                        </CookieProvider>
+                    </AuthProvider>
                 </ThemeProvider>
             )}
         </QueryClientProvider>

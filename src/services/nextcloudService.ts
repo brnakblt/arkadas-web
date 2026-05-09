@@ -1,12 +1,12 @@
-// Types for Arkadaş responses
-export interface ArkadaşUser {
+// Types for Nextcloud responses
+export interface NextcloudUser {
     id: string;
     email?: string;
     displayname?: string; // OCS returns 'displayname' (all lowercase mostly) or 'display-name'
     enabled: boolean;
 }
 
-export interface ArkadaşShare {
+export interface NextcloudShare {
     id: string;
     share_type: number;
     uid_owner: string;
@@ -42,7 +42,7 @@ interface OCSResponse<T> {
     };
 }
 
-export class ArkadaşService {
+export class NextcloudService {
     private baseUrl: string;
     private authHeader: string;
 
@@ -88,13 +88,13 @@ export class ArkadaşService {
         if (!response.ok) {
             // Try to read error message if possible
             const text = await response.text();
-            throw new Error(`Arkadaş API Error ${response.status}: ${response.statusText} - ${text}`);
+            throw new Error(`Nextcloud API Error ${response.status}: ${response.statusText} - ${text}`);
         }
 
         const json = await response.json() as OCSResponse<T>;
 
         if (json.ocs.meta.statuscode !== 100 && json.ocs.meta.statuscode !== 200) {
-            throw new Error(`Arkadaş OCS Error ${json.ocs.meta.statuscode}: ${json.ocs.meta.message}`);
+            throw new Error(`Nextcloud OCS Error ${json.ocs.meta.statuscode}: ${json.ocs.meta.message}`);
         }
 
         return json.ocs.data;
@@ -122,8 +122,8 @@ export class ArkadaşService {
     /**
      * Get user details
      */
-    async getUser(userid: string): Promise<ArkadaşUser> {
-        return this.fetchOCS<ArkadaşUser>(`/cloud/users/${userid}`);
+    async getUser(userid: string): Promise<NextcloudUser> {
+        return this.fetchOCS<NextcloudUser>(`/cloud/users/${userid}`);
     }
 
     /**
@@ -138,7 +138,7 @@ export class ArkadaşService {
         if (shareWith) body.shareWith = shareWith;
         if (permissions) body.permissions = permissions;
 
-        return this.fetchOCS<ArkadaşShare>('/apps/files_sharing/api/v1/shares', 'POST', body);
+        return this.fetchOCS<NextcloudShare>('/apps/files_sharing/api/v1/shares', 'POST', body);
     }
 
     // --- WebDAV Helpers (using fetch) ---

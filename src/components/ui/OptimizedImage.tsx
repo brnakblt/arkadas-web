@@ -24,7 +24,7 @@ export function OptimizedImage({
     // const isExternal = src.startsWith('http') || src.startsWith('//');
 
     // For Strapi images
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+    const strapiUrl = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
     const imageSrc = src.startsWith('/uploads')
         ? `${strapiUrl}${src}`
         : src;

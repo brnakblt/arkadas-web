@@ -75,6 +75,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     </p>
                 </div>
 
+                {/* SSO Login */}
+                {view === 'login' && (
+                    <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                        <button
+                            onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`}
+                            className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all font-body font-medium shadow-lg shadow-primary/20"
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                                <circle cx="12" cy="12" r="5" />
+                            </svg>
+                            Arkadaş Hesabı ile Giriş Yap
+                        </button>
+                        <div className="relative flex items-center justify-center my-6">
+                            <span className="absolute bg-white dark:bg-surface px-4 text-xs text-gray-400 uppercase tracking-widest font-body">veya</span>
+                            <div className="w-full border-t border-gray-100 dark:border-gray-800"></div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Forms */}
                 {view === 'login' && (
                     <LoginForm

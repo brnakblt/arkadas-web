@@ -1,6 +1,6 @@
 /**
  * Storage Service
- * WebDAV client for file operations with Arkadaş
+ * WebDAV client for file operations with SFTPGo
  */
 
 import { createClient, WebDAVClient, FileStat } from 'webdav';

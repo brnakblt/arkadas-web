@@ -5,44 +5,100 @@ import Image from 'next/image';
 import {
     Calendar, CheckCircle, XCircle, Clock, Star,
     BookOpen, User, Users, MoreVertical, Plus, ClipboardList, CheckSquare,
-    TrendingUp, ChevronRight
+    TrendingUp, ChevronRight, X, UserPlus, Trash2
 } from 'lucide-react';
 import { MOCK_STAFF, MOCK_LEAVE_REQUESTS, MOCK_TRAININGS, MOCK_LESSON_PLANS, MOCK_TASKS } from './constants';
 import { personnelService, Personnel } from '@/services/personnelService';
 
 const PersonnelManagement: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'planning' | 'tasks_leaves' | 'performance'>('planning');
+    const [activeTab, setActiveTab] = useState<'planning' | 'tasks_leaves'>('planning');
     const [staffList, setStaffList] = useState<Personnel[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showTaskModal, setShowTaskModal] = useState(false);
+    const [tasks, setTasks] = useState(MOCK_TASKS);
+    const [newStaff, setNewStaff] = useState({ fullName: '', specialty: 'Özel Eğitim Öğretmeni', email: '', phone: '', status: 'Active' });
+    const [newTask, setNewTask] = useState({ title: '', staffId: '', dueDate: '', priority: 'Medium', description: '' });
+
+    const MEB_TITLES = [
+        'Özel Eğitim Öğretmeni', 
+        'Okul Öncesi Öğretmeni', 
+        'Fizyoterapist', 
+        'Dil ve Konuşma Terapisti', 
+        'Psikolog', 
+        'Sosyal Hizmet Uzmanı', 
+        'Odyolog', 
+        'Ergoterapist'
+    ];
+
+    const fetchPersonnel = async () => {
+        try {
+            setLoading(true);
+            const data = await personnelService.getPersonnel();
+            setStaffList(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     React.useEffect(() => {
-        const fetchPersonnel = async () => {
-            try {
-                const data = await personnelService.getPersonnel();
-                setStaffList(data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchPersonnel();
     }, []);
 
+    const handleAddStaff = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            console.log("Adding staff:", newStaff);
+            const mockStaff: Personnel = {
+                id: Math.max(...staffList.map(s => s.id), 0) + 1,
+                ...newStaff,
+                joinDate: new Date().toLocaleDateString('tr-TR'),
+                weeklyHours: 0,
+                maxWeeklyHours: 40
+            } as Personnel;
+            
+            setStaffList([...staffList, mockStaff]);
+            setShowAddModal(false);
+            setNewStaff({ fullName: '', specialty: 'Özel Eğitim Öğretmeni', email: '', phone: '', status: 'Active' });
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleAddTask = (e: React.FormEvent) => {
+        e.preventDefault();
+        const taskObj = {
+            id: tasks.length + 1,
+            ...newTask,
+            status: 'Pending'
+        };
+        setTasks([taskObj as any, ...tasks]);
+        setShowTaskModal(false);
+        setNewTask({ title: '', staffId: '', dueDate: '', priority: 'Medium', description: '' });
+    };
+
+    const handleRemoveStaff = async (id: string | number) => {
+        if (confirm("Bu personeli silmek istediğinize emin misiniz?")) {
+            setStaffList(staffList.filter(s => s.id !== id));
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case 'Active': return <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Aktif</span>;
-            case 'OnLeave': return <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">İzinde</span>;
-            case 'Terminated': return <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Ayrıldı</span>;
+            case 'Active': return <span className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full text-xs font-medium">Aktif</span>;
+            case 'OnLeave': return <span className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-1 rounded-full text-xs font-medium">İzinde</span>;
+            case 'Terminated': return <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-full text-xs font-medium">Ayrıldı</span>;
             default: return null;
         }
     };
 
     const getPriorityBadge = (priority: string) => {
         switch (priority) {
-            case 'High': return <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs font-bold border border-red-100">Yüksek</span>;
-            case 'Medium': return <span className="text-amber-600 bg-amber-50 px-2 py-0.5 rounded text-xs font-medium border border-amber-100">Orta</span>;
-            case 'Low': return <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium border border-blue-100">Düşük</span>;
+            case 'High': return <span className="text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded text-xs font-bold border border-red-100 dark:border-red-900/30">Yüksek</span>;
+            case 'Medium': return <span className="text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded text-xs font-medium border border-amber-100 dark:border-amber-900/30">Orta</span>;
+            case 'Low': return <span className="text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded text-xs font-medium border border-blue-100 dark:border-blue-900/30">Düşük</span>;
             default: return null;
         }
     };
@@ -51,19 +107,22 @@ const PersonnelManagement: React.FC = () => {
     const renderPlanning = () => (
         <div className="space-y-6">
             {/* Staff List */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                    <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <Users size={18} className="text-slate-500" />
                         Personel Kadrosu
                     </h3>
-                    <button className="bg-primary-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-primary-700 flex items-center gap-1">
+                    <button 
+                        onClick={() => setShowAddModal(true)}
+                        className="bg-primary-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-primary-700 flex items-center gap-1 transition-all active:scale-95"
+                    >
                         <Plus size={16} /> Yeni Personel
                     </button>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-slate-600">
-                        <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+                    <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+                        <thead className="bg-slate-50 dark:bg-slate-800/30 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th className="px-6 py-4">Personel</th>
                                 <th className="px-6 py-4">Branş</th>
@@ -73,41 +132,43 @@ const PersonnelManagement: React.FC = () => {
                                 <th className="px-6 py-4 text-right">İşlem</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                             {loading ? (
                                 <tr><td colSpan={6} className="text-center py-4">Yükleniyor...</td></tr>
+                            ) : staffList.length === 0 ? (
+                                <tr><td colSpan={6} className="text-center py-4">Personel bulunamadı.</td></tr>
                             ) : staffList.map((staff) => {
                                 const maxHours = staff.maxWeeklyHours || 40;
                                 const usagePercent = Math.min((staff.weeklyHours / maxHours) * 100, 100);
                                 const isOverload = staff.weeklyHours > maxHours;
 
                                 return (
-                                    <tr key={staff.id} className="hover:bg-slate-50 transition-colors">
+                                    <tr key={staff.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {staff.avatarUrl ? (
                                                     <Image src={staff.avatarUrl} alt={staff.fullName} width={40} height={40} className="rounded-full object-cover bg-slate-200" />
                                                 ) : (
-                                                    <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold">
+                                                    <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 flex items-center justify-center font-bold">
                                                         {staff.fullName.charAt(0)}
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <p className="font-semibold text-slate-800">{staff.fullName}</p>
+                                                    <p className="font-semibold text-slate-800 dark:text-slate-100">{staff.fullName}</p>
                                                     <p className="text-xs text-slate-500">Giriş: {staff.joinDate}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">{staff.specialty}</td>
+                                        <td className="px-6 py-4 text-slate-700 dark:text-slate-300">{staff.specialty}</td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1.5 w-32">
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="text-slate-500">Doluluk</span>
-                                                    <span className={`font-semibold ${isOverload ? 'text-red-600' : 'text-slate-700'}`}>
+                                                    <span className={`font-semibold ${isOverload ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'}`}>
                                                         {staff.weeklyHours}/{maxHours} Sa
                                                     </span>
                                                 </div>
-                                                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                                                <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700">
                                                     <div
                                                         className={`h-full rounded-full transition-all duration-500 ${isOverload ? 'bg-red-500' : 'bg-primary-500'}`}
                                                         style={{ width: `${usagePercent}%` }}
@@ -116,14 +177,23 @@ const PersonnelManagement: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="text-slate-900">{staff.email}</p>
+                                            <p className="text-slate-900 dark:text-slate-200">{staff.email}</p>
                                             <p className="text-xs text-slate-500">{staff.phone}</p>
                                         </td>
                                         <td className="px-6 py-4">{getStatusBadge(staff.status)}</td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-200">
-                                                <MoreVertical size={18} />
-                                            </button>
+                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button 
+                                                    onClick={() => handleRemoveStaff(staff.id)}
+                                                    className="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                                                    title="Sil"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                                <button className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-all">
+                                                    <MoreVertical size={18} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 )
@@ -134,16 +204,16 @@ const PersonnelManagement: React.FC = () => {
             </div>
 
             {/* Lesson Plans */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <ClipboardList className="text-primary-500" size={20} />
                             Haftalık Ders Planları
                         </h3>
-                        <p className="text-sm text-slate-500">Öğretmenlerin sisteme yüklediği haftalık BEP planları.</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Öğretmenlerin sisteme yüklediği haftalık BEP planları.</p>
                     </div>
-                    <button className="text-primary-600 text-sm font-medium hover:underline">Tümünü Gör</button>
+                    <button className="text-primary-600 dark:text-primary-400 text-sm font-medium hover:underline">Tümünü Gör</button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -151,11 +221,11 @@ const PersonnelManagement: React.FC = () => {
                         const staff = MOCK_STAFF.find(s => s.id === plan.staffId);
                         const isApproved = plan.status === 'Approved';
                         return (
-                            <div key={plan.id} className="border border-slate-200 rounded-xl p-4 hover:shadow-md transition-all bg-white relative overflow-hidden">
+                            <div key={plan.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 hover:shadow-md transition-all bg-white dark:bg-slate-900 relative overflow-hidden group">
                                 {isApproved && <div className="absolute top-0 right-0 w-16 h-16 bg-green-500/10 rounded-bl-full z-0"></div>}
                                 <div className="flex justify-between items-start mb-2 relative z-10">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600 overflow-hidden relative">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-400 overflow-hidden relative">
                                             {staff?.avatarUrl ? (
                                                 <Image src={staff.avatarUrl} alt="" width={32} height={32} className="object-cover" />
                                             ) : (
@@ -163,22 +233,22 @@ const PersonnelManagement: React.FC = () => {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-slate-800 text-sm">{staff?.fullName}</p>
+                                            <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{staff?.fullName}</p>
                                             <p className="text-xs text-slate-500">Hafta {plan.week}</p>
                                         </div>
                                     </div>
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${isApproved ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                                    <span className={`px-2 py-1 rounded text-xs font-medium ${isApproved ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                                         }`}>
                                         {plan.status === 'Approved' ? 'Onaylandı' : 'Beklemede'}
                                     </span>
                                 </div>
 
-                                <h4 className="font-bold text-slate-800 mb-1">{plan.subject}</h4>
-                                <p className="text-sm text-slate-600 line-clamp-2 mb-3">{plan.description}</p>
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100 mb-1">{plan.subject}</h4>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">{plan.description}</p>
 
-                                <div className="flex justify-between items-center border-t border-slate-100 pt-3">
+                                <div className="flex justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-3">
                                     <span className="text-xs text-slate-400">{plan.submissionDate}</span>
-                                    <button className="text-primary-600 text-sm font-medium hover:text-primary-700 flex items-center gap-1">
+                                    <button className="text-primary-600 dark:text-primary-400 text-sm font-medium hover:text-primary-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                                         İncele <ChevronRight size={14} />
                                     </button>
                                 </div>
@@ -195,37 +265,40 @@ const PersonnelManagement: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Task Assignments */}
             <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <CheckSquare className="text-lila-500" size={20} />
                             Görevlendirmeler
                         </h3>
-                        <button className="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-800">
+                        <button 
+                            onClick={() => setShowTaskModal(true)}
+                            className="bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-800 dark:hover:bg-white transition-all active:scale-95"
+                        >
                             + Görev Ata
                         </button>
                     </div>
 
                     <div className="space-y-3">
-                        {MOCK_TASKS.map(task => {
-                            const staff = MOCK_STAFF.find(s => s.id === task.staffId);
+                        {tasks.map(task => {
+                            const staff = staffList.find(s => String(s.id) === String(task.staffId)) || MOCK_STAFF.find(s => s.id === task.staffId);
                             return (
-                                <div key={task.id} className="flex items-start gap-4 p-4 bg-white border border-slate-200 rounded-xl hover:border-primary-200 transition-colors group">
-                                    <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer ${task.status === 'Completed' ? 'bg-green-500 border-green-500' : 'border-slate-300 group-hover:border-primary-400'
+                                <div key={task.id} className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary-200 dark:hover:border-primary-800 transition-colors group">
+                                    <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${task.status === 'Completed' ? 'bg-green-500 border-green-500' : 'border-slate-300 dark:border-slate-700 group-hover:border-primary-400'
                                         }`}>
                                         {task.status === 'Completed' && <CheckCircle size={12} className="text-white" />}
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex justify-between items-start">
-                                            <h4 className={`font-semibold text-slate-800 ${task.status === 'Completed' ? 'line-through text-slate-400' : ''}`}>
+                                            <h4 className={`font-semibold text-slate-800 dark:text-slate-100 ${task.status === 'Completed' ? 'line-through text-slate-400' : ''}`}>
                                                 {task.title}
                                             </h4>
                                             {getPriorityBadge(task.priority)}
                                         </div>
-                                        <p className="text-sm text-slate-600 mt-1 mb-2">{task.description}</p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 mb-2">{task.description}</p>
                                         <div className="flex items-center gap-3 text-xs text-slate-500">
-                                            <div className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded">
-                                                <User size={12} /> {staff?.fullName}
+                                            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                                <User size={12} /> {staff?.fullName || 'Bilinmiyor'}
                                             </div>
                                             <div className="flex items-center gap-1">
                                                 <Clock size={12} /> Son: {task.dueDate}
@@ -241,8 +314,8 @@ const PersonnelManagement: React.FC = () => {
 
             {/* Leave Requests */}
             <div className="space-y-6">
-                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                    <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                         <Clock className="text-amber-500" size={20} />
                         İzin Talepleri
                     </h3>
@@ -250,145 +323,25 @@ const PersonnelManagement: React.FC = () => {
                         {MOCK_LEAVE_REQUESTS.filter(r => r.status === 'Pending').map(req => {
                             const staff = MOCK_STAFF.find(s => s.id === req.staffId);
                             return (
-                                <div key={req.id} className="border border-slate-200 rounded-lg p-4 bg-amber-50/30">
+                                <div key={req.id} className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-amber-50/30 dark:bg-amber-900/10">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-semibold text-slate-800">{staff?.fullName}</span>
+                                            <span className="font-semibold text-slate-800 dark:text-slate-100">{staff?.fullName}</span>
                                         </div>
-                                        <span className="text-xs bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-600">{req.type}</span>
+                                        <span className="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded text-slate-600 dark:text-slate-400">{req.type}</span>
                                     </div>
-                                    <p className="text-sm text-slate-600 mb-3 italic">&quot;{req.description}&quot;</p>
-                                    <div className="flex justify-between items-center border-t border-slate-200/50 pt-2">
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 italic">&quot;{req.description}&quot;</p>
+                                    <div className="flex justify-between items-center border-t border-slate-200/50 dark:border-slate-800 pt-2">
                                         <span className="text-xs font-mono text-slate-500">{req.startDate}</span>
                                         <div className="flex gap-2">
-                                            <button className="p-1.5 text-red-600 hover:bg-red-50 rounded bg-white shadow-sm border border-slate-100"><XCircle size={18} /></button>
-                                            <button className="p-1.5 text-green-600 hover:bg-green-50 rounded bg-white shadow-sm border border-slate-100"><CheckCircle size={18} /></button>
+                                            <button className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700"><XCircle size={18} /></button>
+                                            <button className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700"><CheckCircle size={18} /></button>
                                         </div>
                                     </div>
                                 </div>
                             )
                         })}
-                        {MOCK_LEAVE_REQUESTS.filter(r => r.status === 'Pending').length === 0 && (
-                            <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                                <p className="text-slate-400 text-sm">Bekleyen talep yok.</p>
-                            </div>
-                        )}
                     </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                    <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <Calendar className="text-primary-500" size={20} />
-                        İzin Takvimi
-                    </h3>
-                    <div className="space-y-3">
-                        {MOCK_LEAVE_REQUESTS.filter(r => r.status === 'Approved').map(req => {
-                            const staff = MOCK_STAFF.find(s => s.id === req.staffId);
-                            return (
-                                <div key={req.id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                    <div className="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-200 shadow-sm">
-                                        <span className="text-[10px] text-slate-400 uppercase font-bold">{new Date(req.startDate).toLocaleString('tr-TR', { month: 'short' })}</span>
-                                        <span className="text-lg font-bold text-slate-800">{new Date(req.startDate).getDate()}</span>
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800">{staff?.fullName}</p>
-                                        <p className="text-xs text-slate-500">{req.type} ({req.endDate} son)</p>
-                                    </div>
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    // --- TAB 3: GELİŞİM & PERFORMANS ---
-    const renderPerformance = () => (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {MOCK_STAFF.map(staff => (
-                    <div key={staff.id} className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Star size={100} className="text-yellow-500" />
-                        </div>
-
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                                {staff.avatarUrl ? (
-                                    <Image src={staff.avatarUrl} alt={staff.fullName} width={48} height={48} className="rounded-full object-cover shadow-sm bg-slate-200" />
-                                ) : (
-                                    <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center text-lg font-bold text-slate-600 shadow-inner">
-                                        {staff.fullName.charAt(0)}
-                                    </div>
-                                )}
-                                <div>
-                                    <h4 className="font-bold text-slate-800">{staff.fullName}</h4>
-                                    <p className="text-xs text-slate-500">{staff.specialty}</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <span className="text-2xl font-bold text-primary-600">{staff.performanceScore || 0}</span>
-                                <p className="text-[10px] uppercase tracking-wider text-slate-400">Puan</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 mb-6">
-                            <div>
-                                <div className="flex justify-between text-xs mb-1">
-                                    <span className="text-slate-500">BEP & Ders Raporlama</span>
-                                    <span className="font-medium text-slate-700">%95</span>
-                                </div>
-                                <div className="w-full bg-slate-100 rounded-full h-1.5">
-                                    <div className="bg-green-500 h-1.5 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.3)]" style={{ width: '95%' }}></div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="flex justify-between text-xs mb-1">
-                                    <span className="text-slate-500">Veli Memnuniyeti</span>
-                                    <span className="font-medium text-slate-700">%88</span>
-                                </div>
-                                <div className="w-full bg-slate-100 rounded-full h-1.5">
-                                    <div className="bg-primary-500 h-1.5 rounded-full" style={{ width: '88%' }}></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="border-t border-slate-100 pt-3">
-                            <h5 className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1 uppercase tracking-wide">
-                                <BookOpen size={12} /> Eğitim Geçmişi
-                            </h5>
-                            <ul className="space-y-2">
-                                {MOCK_TRAININGS.filter(t => t.staffId === staff.id).map(t => (
-                                    <li key={t.id} className="text-xs text-slate-600 flex items-start gap-2">
-                                        <div className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.status === 'Completed' ? 'bg-green-500' : 'bg-amber-500'}`}></div>
-                                        <span className="line-clamp-1 hover:line-clamp-none transition-all cursor-default" title={t.title}>{t.title}</span>
-                                    </li>
-                                ))}
-                                {MOCK_TRAININGS.filter(t => t.staffId === staff.id).length === 0 && <li className="text-xs text-slate-400 italic">Kayıtlı eğitim yok</li>}
-                            </ul>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* AI Analysis Box */}
-            <div className="bg-gradient-to-r from-lila-50 to-white border border-lila-100 rounded-xl p-6 flex items-start gap-4 shadow-sm">
-                <div className="p-3 bg-white rounded-lg shadow-sm text-lila-600 border border-lila-100">
-                    <TrendingUp size={24} />
-                </div>
-                <div>
-                    <h4 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-                        Yapay Zeka Performans Önerisi
-                        <span className="text-[10px] bg-lila-100 text-lila-700 px-2 py-0.5 rounded-full">Gemini Analysis</span>
-                    </h4>
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                        Kurum genelinde <strong>&quot;Duyu Bütünleme&quot;</strong> konusunda eğitim talebi artışı gözlemleniyor.
-                        Elif Öğretmen&apos;in BEP raporlama hızı geçen aya göre <strong>%15 arttı</strong>, personel motivasyonu için &quot;Ayın Personeli&quot; ödülüne aday gösterilmesi önerilir.
-                        Burak Hoca&apos;nın materyal eksiklik bildirimleri bu hafta yoğunlaştı, envanter kontrolü yapılmalı.
-                    </p>
                 </div>
             </div>
         </div>
@@ -396,29 +349,23 @@ const PersonnelManagement: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-slate-200 pb-4">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Personel Yönetimi</h2>
-                    <p className="text-slate-500">İnsan kaynakları, eğitim planlama ve performans değerlendirme</p>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Personel Yönetimi</h2>
+                    <p className="text-slate-500 dark:text-slate-400">İnsan kaynakları, eğitim planlama ve MEB standartları</p>
                 </div>
-                <div className="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+                <div className="flex bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
                     <button
                         onClick={() => setActiveTab('planning')}
-                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'planning' ? 'bg-slate-800 text-white shadow' : 'text-slate-600 hover:bg-slate-50'}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'planning' ? 'bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 shadow' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                     >
                         Kadro & Planlama
                     </button>
                     <button
                         onClick={() => setActiveTab('tasks_leaves')}
-                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'tasks_leaves' ? 'bg-slate-800 text-white shadow' : 'text-slate-600 hover:bg-slate-50'}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'tasks_leaves' ? 'bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 shadow' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                     >
                         İzin & Görevlendirme
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('performance')}
-                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'performance' ? 'bg-slate-800 text-white shadow' : 'text-slate-600 hover:bg-slate-50'}`}
-                    >
-                        Gelişim & Performans
                     </button>
                 </div>
             </div>
@@ -426,8 +373,139 @@ const PersonnelManagement: React.FC = () => {
             <div className="animate-fade-in min-h-[500px]">
                 {activeTab === 'planning' && renderPlanning()}
                 {activeTab === 'tasks_leaves' && renderTasksAndLeaves()}
-                {activeTab === 'performance' && renderPerformance()}
             </div>
+
+            {/* Modals */}
+            {showAddModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md" style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
+                        <div className="bg-primary p-4 flex justify-between items-center text-white">
+                            <h3 className="font-bold text-lg flex items-center gap-2"><UserPlus size={20} /> Yeni Personel Ekle</h3>
+                            <button onClick={() => setShowAddModal(false)} className="hover:bg-white/20 rounded-full p-1"><X size={24} /></button>
+                        </div>
+                        <form onSubmit={handleAddStaff} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Ad Soyad</label>
+                                <input 
+                                    required
+                                    type="text" 
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100" 
+                                    value={newStaff.fullName}
+                                    onChange={e => setNewStaff({...newStaff, fullName: e.target.value})}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Branş / Uzmanlık (MEB)</label>
+                                <select 
+                                    required
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100" 
+                                    value={newStaff.specialty}
+                                    onChange={e => setNewStaff({...newStaff, specialty: e.target.value})}
+                                >
+                                    {MEB_TITLES.map(title => <option key={title} value={title}>{title}</option>)}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-posta</label>
+                                    <input 
+                                        type="email" 
+                                        className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100" 
+                                        value={newStaff.email}
+                                        onChange={e => setNewStaff({...newStaff, email: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Telefon</label>
+                                    <input 
+                                        type="tel" 
+                                        className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100" 
+                                        value={newStaff.phone}
+                                        onChange={e => setNewStaff({...newStaff, phone: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            <div className="pt-4 flex gap-3">
+                                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-medium">İptal</button>
+                                <button type="submit" className="flex-1 px-4 py-2 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark shadow-lg shadow-primary/20">Kaydet</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showTaskModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md" style={{ position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh' }}>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
+                        <div className="bg-slate-900 p-4 flex justify-between items-center text-white">
+                            <h3 className="font-bold text-lg flex items-center gap-2"><CheckSquare size={20} /> Yeni Görev Tanımla</h3>
+                            <button onClick={() => setShowTaskModal(false)} className="hover:bg-white/20 rounded-full p-1"><X size={24} /></button>
+                        </div>
+                        <form onSubmit={handleAddTask} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Görev Başlığı</label>
+                                <input 
+                                    required
+                                    type="text" 
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100" 
+                                    placeholder="Örn: BEP Raporu Hazırlama" 
+                                    value={newTask.title}
+                                    onChange={e => setNewTask({...newTask, title: e.target.value})}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Personel Seçin</label>
+                                <select 
+                                    required
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100"
+                                    value={newTask.staffId}
+                                    onChange={e => setNewTask({...newTask, staffId: e.target.value})}
+                                >
+                                    <option value="">Seçiniz...</option>
+                                    {staffList.map(s => <option key={s.id} value={s.id}>{s.fullName}</option>)}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Son Tarih</label>
+                                    <input 
+                                        required
+                                        type="date" 
+                                        className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100" 
+                                        value={newTask.dueDate}
+                                        onChange={e => setNewTask({...newTask, dueDate: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Öncelik</label>
+                                    <select 
+                                        className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100"
+                                        value={newTask.priority}
+                                        onChange={e => setNewTask({...newTask, priority: e.target.value})}
+                                    >
+                                        <option value="High">Yüksek</option>
+                                        <option value="Medium">Orta</option>
+                                        <option value="Low">Düşük</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Açıklama</label>
+                                <textarea 
+                                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100"
+                                    rows={3}
+                                    value={newTask.description}
+                                    onChange={e => setNewTask({...newTask, description: e.target.value})}
+                                ></textarea>
+                            </div>
+                            <div className="pt-4 flex gap-3">
+                                <button type="button" onClick={() => setShowTaskModal(false)} className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-medium">İptal</button>
+                                <button type="submit" className="flex-1 px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold hover:bg-slate-800 transition-all">Görevlendir</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -15,13 +15,13 @@ if (fs.existsSync(envPath)) {
     });
 }
 
-const ARKADAS_URL = envConfig.NEXT_PUBLIC_ARKADAS_URL || "http://localhost:8080";
-const ARKADAS_USER = envConfig.ARKADAS_USER || "admin";
-const ARKADAS_PASSWORD = envConfig.ARKADAS_PASSWORD || "admin";
+const NEXTCLOUD_URL = envConfig.NEXT_PUBLIC_NEXTCLOUD_URL || "http://localhost:8080";
+const NEXTCLOUD_USER = envConfig.NEXTCLOUD_USER || "admin";
+const NEXTCLOUD_PASSWORD = envConfig.NEXTCLOUD_PASSWORD || "admin";
 
-const client = createClient(`${ARKADAS_URL}/remote.php/dav/files/${ARKADAS_USER}/`, {
-    username: ARKADAS_USER,
-    password: ARKADAS_PASSWORD
+const client = createClient(`${NEXTCLOUD_URL}/remote.php/dav/files/${NEXTCLOUD_USER}/`, {
+    username: NEXTCLOUD_USER,
+    password: NEXTCLOUD_PASSWORD
 });
 
 async function run() {
@@ -29,11 +29,11 @@ async function run() {
         await client.createDirectory("/ArkadasUsers");
     } catch (e) {}
     try {
-        await client.createDirectory(`/ArkadasUsers/${ARKADAS_USER}`);
+        await client.createDirectory(`/ArkadasUsers/${NEXTCLOUD_USER}`);
     } catch (e) {}
 
     const buffer = Buffer.from("Test content for DOCX");
-    await client.putFileContents(`/ArkadasUsers/${ARKADAS_USER}/test-document.docx`, buffer);
+    await client.putFileContents(`/ArkadasUsers/${NEXTCLOUD_USER}/test-document.docx`, buffer);
     console.log("Uploaded test-document.docx");
 }
 

@@ -46,7 +46,7 @@ export function getMetadata(seoData: StrapiSeoData): Metadata {
     // const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${process.env.NEXT_PUBLIC_STRAPI_URL}${imageUrl}`;
     
     // Assuming Strapi URL might be needed if it's a relative path
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+    const strapiUrl = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
     const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${strapiUrl}${imageUrl}`;
 
     metadata.openGraph = {

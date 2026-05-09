@@ -291,24 +291,23 @@ body {
 }
 
 /* Swiper Pagination Bullets */
-/* Swiper Pagination Bullets - Optimized for Touch Targets (24px min) */
 .swiper-pagination-bullet {
-  width: 12px !important;
-  height: 12px !important;
-  background: #2A2A2A !important;
-  opacity: 0.3 !important;
+  width: 10px !important;
+  height: 10px !important;
+  background: var(--color-neutral-dark) !important;
+  opacity: 0.15 !important;
   transition: all 0.3s ease !important;
-  /* Add transparent border to increase touch area to 24x24px without affecting visual size */
-  border: 6px solid transparent !important;
+  /* Add transparent border to increase touch area */
+  border: 4px solid transparent !important;
   background-clip: padding-box !important;
   box-sizing: content-box !important;
   margin: 0 4px !important;
 }
 
 .swiper-pagination-bullet-active {
-  background: #F4A261 !important;
+  background: var(--color-primary) !important;
   opacity: 1 !important;
-  width: 12px !important;
+  transform: scale(1.1);
   border-radius: 50% !important;
 }
 

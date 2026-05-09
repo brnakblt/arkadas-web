@@ -38,65 +38,14 @@ const ServicesSlider: React.FC<ServicesSliderProps> = ({ data, openModal, iconMa
     }
 
     return (
-        <div className="services-swiper-container relative px-4 md:px-16">
-            {/* Custom Navigation Buttons */}
-            <button
-                ref={prevRef}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 hidden md:flex items-center justify-center text-primary hover:scale-110 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
-                aria-label="Önceki"
-            >
-                <svg
-                    width="11"
-                    height="20"
-                    viewBox="0 0 11 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z"
-                        fill="currentColor"
-                        transform="rotate(180 5.5 10)"
-                    />
-                </svg>
-            </button>
-
-            <button
-                ref={nextRef}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 hidden md:flex items-center justify-center text-primary hover:scale-110 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus:outline-none"
-                aria-label="Sonraki"
-            >
-                <svg
-                    width="11"
-                    height="20"
-                    viewBox="0 0 11 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z"
-                        fill="currentColor"
-                    />
-                </svg>
-            </button>
-
+        <div className="services-swiper-container relative">
             <Swiper
-                modules={[Pagination, Autoplay, Navigation]}
+                modules={[Pagination, Autoplay]}
                 spaceBetween={24}
                 slidesPerView={1}
                 loop={true}
-                navigation={{
-                    prevEl: prevRef.current,
-                    nextEl: nextRef.current,
-                }}
-                onBeforeInit={(swiper) => {
-                    // @ts-ignore
-                    swiper.params.navigation.prevEl = prevRef.current;
-                    // @ts-ignore
-                    swiper.params.navigation.nextEl = nextRef.current;
-                }}
                 pagination={{
                     clickable: true,
-                    dynamicBullets: true,
                 }}
                 autoplay={{
                     delay: 3000,
@@ -116,8 +65,8 @@ const ServicesSlider: React.FC<ServicesSliderProps> = ({ data, openModal, iconMa
                 className="!pb-16"
             >
                 {items.map((service, index) => (
-                    <SwiperSlide key={`${index}-${service.slug || index}`} className="h-auto">
-                        <div className="h-full flex flex-col bg-white rounded-3xl p-8 card-shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden group border border-gray-100/50">
+                    <SwiperSlide key={`${index}-${service.slug || index}`} className="!h-auto">
+                        <div className="h-full min-h-[420px] flex flex-col bg-white rounded-3xl p-8 card-shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 relative overflow-hidden group border border-gray-100/50">
                             {/* Background Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 

@@ -35,3 +35,10 @@ ts-debug.log*
 next-env.d.ts
 
 /assets
+web.log
+
+
+arkadas-sdk
+public/workbox-*
+*.bak
+

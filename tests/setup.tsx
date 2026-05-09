@@ -30,15 +30,16 @@ vi.mock('next/navigation', () => ({
 // Mock next/image
 vi.mock('next/image', () => ({
     default: (props: Record<string, unknown>) => {
-        return React.createElement('img', props as React.ImgHTMLAttributes<HTMLImageElement>);
+        // eslint-disable-next-line @next/next/no-img-element
+        return <img {...props} />;
     },
 }));
 
 // Mock next/link (since this was causing issues in ErrorBoundary tests)
 vi.mock('next/link', () => ({
-    default: ({ children, href }: { children: React.ReactNode; href: string }) => {
-        return React.createElement('a', { href }, children);
-    },
+    default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+        <a href={href}>{children}</a>
+    ),
 }));
 
 // Mock IntersectionObserver

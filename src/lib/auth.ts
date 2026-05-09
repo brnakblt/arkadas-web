@@ -168,7 +168,7 @@ export const authApi = {
         // Let's us direct call but DO NOT store token. User must login?
         // Or create /api/auth/register?
         // Given scope, I will leave register touching Strapi but remove token storage.
-        const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/auth/local/register`, {
+        const response = await fetch(`${process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/auth/local/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, email, password }),
@@ -236,7 +236,7 @@ export const authApi = {
      * Request password reset
      */
     async forgotPassword(email: string): Promise<void> {
-        await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/auth/forgot-password`, {
+        await fetch(`${process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/auth/forgot-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),
@@ -251,7 +251,7 @@ export const authApi = {
         password: string,
         passwordConfirmation: string
     ): Promise<void> {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/auth/reset-password`, {
+        const response = await fetch(`${process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}/api/auth/reset-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, password, passwordConfirmation }),

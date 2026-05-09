@@ -3,7 +3,7 @@
  * API calls for service routes, location updates, and tracking
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const API_BASE = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 const USE_MOCK = process.env.NEXT_PUBLIC_MOCK_DATA === 'true';
 import { mockServiceRoutes, mockLocationLog } from '../mocks/strapiMocks';
 

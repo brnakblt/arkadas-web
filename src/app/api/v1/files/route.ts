@@ -6,7 +6,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createArkadaşClient, listFiles, createDirectory } from '@/lib/arkadas';
+import nextcloud from '@/lib/nextcloud';
+const { createNextcloudClient, listFiles, createDirectory } = nextcloud;
 
 export async function GET(request: NextRequest) {
     try {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
         const token = cookieStore.get('jwt')?.value;
         const _tenant_id = token ? 'authenticated-tenant' : 'arkadas';
 
-        const client = createArkadaşClient();
+        const client = createNextcloudClient();
         const files = await listFiles(client, path);
 
         return NextResponse.json({
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const client = createArkadaşClient();
+        const client = createNextcloudClient();
 
         if (type === 'directory') {
             await createDirectory(client, path);

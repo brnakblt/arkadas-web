@@ -21,9 +21,10 @@ export default defineConfig({
             'e2e',
             // Skip React component tests due to React 18/19 version conflict in npm workspaces
             // TODO: Fix once Strapi supports React 19 or separate web tests from monorepo
-            '**/components/**/*.test.tsx',
-            'src/components/**/__tests__/**',
-            '**/components/**/*.test.ts',
+            ...(process.env.CI === 'true' ? [
+                '**/components/**/*.test.tsx',
+                'src/components/**/__tests__/**',
+            ] : []),
         ],
         coverage: {
             provider: 'v8',
