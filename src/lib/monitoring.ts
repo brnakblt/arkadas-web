@@ -80,6 +80,12 @@ export async function initMonitoring(config: Partial<MonitoringConfig> = {}): Pr
     }
 
     try {
+        // Check if DSN is provided and valid (not placeholder)
+        if (!dsn || dsn === 'your-sentry-dsn-here') {
+            console.log('[Monitoring] Sentry DSN is missing or placeholder. Running in mock mode.');
+            return false;
+        }
+
         // Dynamic import Sentry
         const Sentry = await import('@sentry/nextjs');
 

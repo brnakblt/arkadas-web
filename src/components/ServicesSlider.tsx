@@ -43,7 +43,7 @@ const ServicesSlider: React.FC<ServicesSliderProps> = ({ data, openModal, iconMa
                 modules={[Pagination, Autoplay]}
                 spaceBetween={24}
                 slidesPerView={1}
-                loop={true}
+                loop={false}
                 pagination={{
                     clickable: true,
                 }}

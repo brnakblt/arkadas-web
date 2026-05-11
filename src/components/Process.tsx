@@ -100,7 +100,7 @@ const Process: React.FC<ProcessProps> = ({ data }) => {
         <div className="relative pt-8">
           <Swiper
             modules={[Autoplay, Pagination]}
-            loop={true}
+            loop={false}
             speed={500}
             autoplay={{
               delay: 3000,

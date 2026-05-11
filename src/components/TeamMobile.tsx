@@ -27,7 +27,7 @@ const TeamMobile: React.FC<TeamMobileProps> = ({ members, TeamMemberCard }) => {
             modules={[Pagination, Autoplay]}
             spaceBetween={24}
             slidesPerView={1}
-            loop={true}
+            loop={false}
             autoplay={{
                 delay: 3000,
                 disableOnInteraction: false,
